@@ -5,6 +5,9 @@
 #include <assert.h>
 #include <objidl.h>
 #include <gdiplus.h>
+
+#include "Elements/Initializer.h"
+
 #pragma comment (lib,"gdiplus.lib")
 
 void AlignWindowToNotify(HWND _hwnd);
@@ -15,6 +18,7 @@ protected:
 	HICON hIcon;
 	WNDCLASS winClass;
 	HWND hWnd;
+	HWND hHostWnd;
 	HINSTANCE hInstance;
 	const wchar_t* CLASS_NAME;
 	

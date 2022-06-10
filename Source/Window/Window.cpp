@@ -86,17 +86,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         GetClientRect(hwnd, &ClientRect);
 
         Gdiplus::Color c(0, 255, 0, 0); // ARGB = 0x00FF0000
-        graphics.Clear(c);
+        //graphics.Clear(c);
 
         // Draw background
-        graphics.DrawImage(BackgroundBmp, 0, 0, (INT)(700 * Scale), (INT)((516 - 35) * Scale));
         graphics.DrawImage(ArrowBmp, (INT)(((700) / 2 - (73) / 2) * Scale  ), (INT)((516-35) * Scale), (INT)(73 * Scale), (INT)(35 * Scale));
+        graphics.DrawImage(BackgroundBmp, 0, 0, (INT)(700 * Scale), (INT)((516 - 35) * Scale));
 
         //FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 
         EndPaint(hwnd, &ps);
     }
-    return 0;
     default:
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
         break;
@@ -106,11 +105,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
 	:hIcon(Icon), hInstance(hInst), CLASS_NAME(ClassName)
 {
+    RegisterAllElements(hInst);
+
     winClass = {};
     winClass.lpfnWndProc = WindowProc;
     winClass.hInstance = hInstance;
     winClass.hIcon = hIcon;
     winClass.lpszClassName = CLASS_NAME;
+    winClass.hbrBackground = (HBRUSH)0;
 
     RegisterClass(&winClass);
 
@@ -120,20 +122,26 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
     Gdiplus::GdiplusStartupOutput gdioutput = {};
     Gdiplus::GdiplusStartup(&WinGDIToken, &gdiinput, &gdioutput);
 
+    hHostWnd = CreateWindow(CLASS_NAME, NULL, WS_POPUP,
+        0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+
     hWnd = CreateWindowEx(
         WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_TRANSPARENT,            // Window style
         CLASS_NAME,                     // Window class
         L"Color Picker",    // Window text
-        WS_POPUP,            // Window style
+        WS_VISIBLE | WS_POPUP,            // Window style
 
         // Size and position
         CW_USEDEFAULT, CW_USEDEFAULT, 700 * Scale, 516 * Scale,
 
-        NULL,       // Parent window    
+        hHostWnd,       // Parent window    
         NULL,       // Menu
         hInstance,  // Instance handle
         NULL        // Additional application data
     );
+
+    //SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 255, ULW_COLORKEY);
+    //SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
 
     if (hWnd == NULL)
     {
@@ -168,8 +176,9 @@ bool Window::StartWindow()
 
 int Window::LoopWindow()
 {
-    MSG msg;
-    while (GetMessage(&msg, hWnd, 0, 0))
+    MSG msg = {};
+    ZeroMemory(&msg, sizeof(MSG));
+    while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -204,5 +213,6 @@ void AlignWindowToNotify(HWND _hwnd)
 
 void Window::PopulateClientWithWindows(HWND hwnd)
 {
-    CreateWindow(L"static", L"Test ", WS_VISIBLE | WS_CHILD, 50, 50, 100, 100, hwnd, NULL, hI, NULL);
+    CreateWindow(L"edit", L"Test ", WS_VISIBLE | WS_CHILD, 50, 50, 100, 100, hwnd, NULL, hI, NULL);
 }
+
