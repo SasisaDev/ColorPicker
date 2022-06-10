@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <assert.h>
 #include <objidl.h>
+#include <atlimage.h>
 #include <gdiplus.h>
 
 #include "Elements/Initializer.h"

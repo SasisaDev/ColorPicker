@@ -16,6 +16,8 @@ HINSTANCE hI;
 //GDI+
 ULONG_PTR WinGDIToken;
 
+void SetBlendFunctionSetiings(BLENDFUNCTION& blendFunction);
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static BITMAPINFOHEADER* pbmi = NULL;
@@ -70,7 +72,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         Gdiplus::Graphics graphics(hdc);
 
         HDC hdcScreen = GetDC(NULL);
-        HDC hdcMem = CreateCompatibleDC(hdcScreen);
+        HDC hdcMem = CreateCompatibleDC(hdc);
 
         // use the source image's alpha channel for blending
         BLENDFUNCTION blend = { 0 };
@@ -85,6 +87,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         RECT ClientRect;
         GetClientRect(hwnd, &ClientRect);
 
+        POINT pptDst = { ClientRect.left, ClientRect.top };
+        SIZE psize = { ClientRect.right - ClientRect.left, ClientRect.bottom - ClientRect.top };
+
         Gdiplus::Color c(0, 255, 0, 0); // ARGB = 0x00FF0000
         //graphics.Clear(c);
 
@@ -92,9 +97,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         graphics.DrawImage(ArrowBmp, (INT)(((700) / 2 - (73) / 2) * Scale  ), (INT)((516-35) * Scale), (INT)(73 * Scale), (INT)(35 * Scale));
         graphics.DrawImage(BackgroundBmp, 0, 0, (INT)(700 * Scale), (INT)((516 - 35) * Scale));
 
-        //FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        if (UpdateLayeredWindow(hwnd, hdc, &pptDst, &psize, hdcMem, &pptDst, RGB(0, 0, 0), &blend, ULW_ALPHA) == 0)
+        {
+            exit(-1);
+        }
 
         EndPaint(hwnd, &ps);
+
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
+        break;
     }
     default:
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -111,8 +122,13 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
     winClass.lpfnWndProc = WindowProc;
     winClass.hInstance = hInstance;
     winClass.hIcon = hIcon;
+    winClass.hCursor = LoadCursor(NULL, IDC_ARROW);
     winClass.lpszClassName = CLASS_NAME;
-    winClass.hbrBackground = (HBRUSH)0;
+    //winClass.hbrBackground = (HBRUSH)COLOR_BACKGROUND;
+
+    winClass.lpszMenuName = NULL;
+    winClass.cbClsExtra = 0;
+    winClass.cbWndExtra = 0;
 
     RegisterClass(&winClass);
 
@@ -122,11 +138,11 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
     Gdiplus::GdiplusStartupOutput gdioutput = {};
     Gdiplus::GdiplusStartup(&WinGDIToken, &gdiinput, &gdioutput);
 
-    hHostWnd = CreateWindow(CLASS_NAME, NULL, WS_POPUP,
-        0, 0, 0, 0, NULL, NULL, hInstance, NULL);
+    /*hHostWnd = CreateWindow(CLASS_NAME, NULL, WS_POPUP,
+        0, 0, 0, 0, NULL, NULL, hInstance, NULL);*/
 
     hWnd = CreateWindowEx(
-        WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_TRANSPARENT,            // Window style
+        WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_LAYERED,            // Window style
         CLASS_NAME,                     // Window class
         L"Color Picker",    // Window text
         WS_VISIBLE | WS_POPUP,            // Window style
@@ -134,13 +150,13 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
         // Size and position
         CW_USEDEFAULT, CW_USEDEFAULT, 700 * Scale, 516 * Scale,
 
-        hHostWnd,       // Parent window    
+        NULL,       // Parent window    
         NULL,       // Menu
         hInstance,  // Instance handle
         NULL        // Additional application data
     );
 
-    //SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 255, ULW_COLORKEY);
+    //SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 0, ULW_COLORKEY);
     //SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
 
     if (hWnd == NULL)
@@ -216,3 +232,10 @@ void Window::PopulateClientWithWindows(HWND hwnd)
     CreateWindow(L"edit", L"Test ", WS_VISIBLE | WS_CHILD, 50, 50, 100, 100, hwnd, NULL, hI, NULL);
 }
 
+void SetBlendFunctionSetiings(BLENDFUNCTION& blendFunction)
+{
+    blendFunction.AlphaFormat = AC_SRC_ALPHA;
+    blendFunction.BlendFlags = 0;
+    blendFunction.BlendOp = AC_SRC_OVER;
+    blendFunction.SourceConstantAlpha = 220;
+}
