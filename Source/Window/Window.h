@@ -3,6 +3,9 @@
 #if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
 #include <assert.h>
+#include <objidl.h>
+#include <gdiplus.h>
+#pragma comment (lib,"gdiplus.lib")
 
 void AlignWindowToNotify(HWND _hwnd);
 
@@ -20,6 +23,8 @@ public:
 	~Window();
 
 	HWND* GetHWND() {return &hWnd;}
+
+	static void PopulateClientWithWindows(HWND hwnd);
 
 	bool StartWindow();
 	int LoopWindow();

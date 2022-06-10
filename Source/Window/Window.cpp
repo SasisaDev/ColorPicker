@@ -4,20 +4,31 @@
 
 NotifyIcon* Icon;
 
+float Scale = 0.4f;
+
 HBITMAP hArrowBmp, hBackgroundBmp;
-BITMAP ArrowBmp, BackgroundBmp;
+Gdiplus::Bitmap *ArrowBmp, *BackgroundBmp;
+HPALETTE Palette;
 PAINTSTRUCT ps;
 HDC hdc, hdcMem;
 HINSTANCE hI;
 
+//GDI+
+ULONG_PTR WinGDIToken;
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    static BITMAPINFOHEADER* pbmi = NULL;
+    static BYTE* pBuffer = NULL;
+
     switch (uMsg)
     {
     case WM_CREATE:
         // Gather HINSTANCE
         hI = reinterpret_cast<HINSTANCE>(GetWindowLong(hwnd, GWL_HINSTANCE));
        
+        Window::PopulateClientWithWindows(hwnd);
+
         // Gather resources' handles
         hArrowBmp = reinterpret_cast<HBITMAP>(::LoadImage(hI, MAKEINTRESOURCE(IDB_BITMAP2), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
         hBackgroundBmp = reinterpret_cast<HBITMAP>(::LoadImage(hI, MAKEINTRESOURCE(IDB_BITMAP1), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
@@ -29,8 +40,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
 
         // Getting actual objects
-        GetObject(hArrowBmp, sizeof(BITMAP), &ArrowBmp);
-        GetObject(hBackgroundBmp, sizeof(BITMAP), &BackgroundBmp);
+        ArrowBmp = Gdiplus::Bitmap::FromHBITMAP(hArrowBmp, NULL);
+        BackgroundBmp = Gdiplus::Bitmap::FromHBITMAP(hBackgroundBmp, NULL);
 
         break;
     case WM_CLOSE:
@@ -56,17 +67,32 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
     {
         hdc = BeginPaint(hwnd, &ps);
+        Gdiplus::Graphics graphics(hdc);
+
+        HDC hdcScreen = GetDC(NULL);
+        HDC hdcMem = CreateCompatibleDC(hdcScreen);
+
+        // use the source image's alpha channel for blending
+        BLENDFUNCTION blend = { 0 };
+        blend.BlendOp = AC_SRC_OVER;
+        blend.SourceConstantAlpha = 255;
+        blend.AlphaFormat = AC_SRC_ALPHA;
+
+        //UpdateLayeredWindow(hwnd, hdcScreen, 0, 0,
+        //    hdcMem, 0, RGB(0, 0, 0), &blend, ULW_ALPHA);
 
         // Get rect
         RECT ClientRect;
         GetClientRect(hwnd, &ClientRect);
 
-        // Draw background
-        SetStretchBltMode(hdc, STRETCH_HALFTONE);
-        StretchBlt(hdc, 0, 0, ClientRect.right, ClientRect.bottom,
-            hdcMem, ClientRect.right / 2 - 36, 0, ArrowBmp.bmWidth, ArrowBmp.bmHeight, SRCCOPY);
+        Gdiplus::Color c(0, 255, 0, 0); // ARGB = 0x00FF0000
+        graphics.Clear(c);
 
-        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        // Draw background
+        graphics.DrawImage(BackgroundBmp, 0, 0, (INT)(700 * Scale), (INT)((516 - 35) * Scale));
+        graphics.DrawImage(ArrowBmp, (INT)(((700) / 2 - (73) / 2) * Scale  ), (INT)((516-35) * Scale), (INT)(73 * Scale), (INT)(35 * Scale));
+
+        //FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
 
         EndPaint(hwnd, &ps);
     }
@@ -88,10 +114,14 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
 
     RegisterClass(&winClass);
 
-    float Scale = 0.4f;
+    Gdiplus::GdiplusStartupInput gdiinput = {};
+    gdiinput.GdiplusVersion = 1;
+
+    Gdiplus::GdiplusStartupOutput gdioutput = {};
+    Gdiplus::GdiplusStartup(&WinGDIToken, &gdiinput, &gdioutput);
 
     hWnd = CreateWindowEx(
-        WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_LAYERED,            // Window style
+        WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_TRANSPARENT,            // Window style
         CLASS_NAME,                     // Window class
         L"Color Picker",    // Window text
         WS_POPUP,            // Window style
@@ -119,15 +149,19 @@ Window::~Window()
         delete Icon;
         Icon = nullptr;
     }
+
+    Gdiplus::GdiplusShutdown(WinGDIToken);
 }
 
 bool Window::StartWindow()
 {
-    ShowWindow(hWnd, SW_SHOW);
+    ShowWindow(hWnd, SW_HIDE);
 
     Icon = new NotifyIcon(&hWnd, &hIcon);
     
     Icon->AddIcon();
+
+    AlignWindowToNotify(hWnd);
 
     return true;
 }
@@ -165,4 +199,10 @@ void AlignWindowToNotify(HWND _hwnd)
     WinResult.bottom = WinResult.top + winSize.y;
     
     MoveWindow(_hwnd, WinResult.left, WinResult.top, winSize.x, winSize.y, true);
+}
+
+
+void Window::PopulateClientWithWindows(HWND hwnd)
+{
+    CreateWindow(L"static", L"Test ", WS_VISIBLE | WS_CHILD, 50, 50, 100, 100, hwnd, NULL, hI, NULL);
 }
