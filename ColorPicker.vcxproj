@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source\NotificationInterface\Notify.cpp" />
+    <ClCompile Include="Source\Window\Elements\ColorPicker\ColorPicker.cpp" />
     <ClCompile Include="Source\Window\Elements\EditBox\EditBox.cpp" />
     <ClCompile Include="Source\Window\Elements\Element.cpp" />
     <ClCompile Include="Source\Window\Elements\Initializer.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Source\NotificationInterface\Notify.h" />
     <ClInclude Include="Source\Window\Elements\basedef.h" />
+    <ClInclude Include="Source\Window\Elements\ColorPicker\ColorPicker.h" />
     <ClInclude Include="Source\Window\Elements\EditBox\EditBox.h" />
     <ClInclude Include="Source\Window\Elements\Element.h" />
     <ClInclude Include="Source\Window\Elements\Initializer.h" />

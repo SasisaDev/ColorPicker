@@ -36,6 +36,9 @@
     <ClCompile Include="Source\Window\Elements\Text\Text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Window\Elements\ColorPicker\ColorPicker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NotificationInterface\Notify.h">
@@ -60,6 +63,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Window\Elements\Text\Text.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Window\Elements\ColorPicker\ColorPicker.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

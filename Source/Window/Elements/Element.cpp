@@ -13,6 +13,11 @@ int ColElement::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx,
 	return 0;
 }
 
+void ColElement::SetRepaintCallback(std::function<void()> callback)
+{
+	rerenderCallback = callback;
+}
+
 Gdiplus::Rect ColElement::GetRectOnCanvas()
 {
 	Gdiplus::Rect dest = { area.left, area.top, area.right-area.left, area.bottom-area.top };

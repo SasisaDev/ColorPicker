@@ -1,16 +1,7 @@
 #include "EditBox.h"
 #include "../../../../resource.h"
 
-LRESULT CALLBACK _EditBoxProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    switch (uMsg)
-    {
-    default:
-        return DefWindowProc(hwnd, uMsg, wParam, lParam);
-        break;
-    }
-}
-
+#if defined(WIN32)
 int ColEditBox::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, int cy)
 {
     ColElement::Register(hInstance, hOwner, x, y, cx, cy);
@@ -75,3 +66,4 @@ int ColEditBox::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 
     return 1;
 }
+#endif

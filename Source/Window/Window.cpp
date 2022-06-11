@@ -341,4 +341,11 @@ void Window::PopulateClientWithWindows(HWND hwnd)
     AlphaText->Register(hI, hwnd, TextAdjust, MarginTB * 5 + InterEditboxMargin * 4, 31, 18);
     AlphaText->SetText(L"alpha");
     elements.push_back(AlphaText);
+
+    // Color picker
+
+    ColColorPicker* ColorPicker = new ColColorPicker();
+    ColorPicker->Register(hI, hwnd, MarginLR, MarginTB, 364 * Scale, 364 * Scale);
+    ColorPicker->SetRepaintCallback(std::bind(&Window::RefreshWindow, this));
+    elements.push_back(ColorPicker);
 }
