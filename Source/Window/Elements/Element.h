@@ -1,3 +1,4 @@
+#pragma once
 #if defined(WIN32)
 #include <Windows.h>
 #include <gdiplus.h>

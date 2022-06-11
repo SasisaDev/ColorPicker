@@ -148,6 +148,7 @@
     <ClCompile Include="Source\Window\Elements\EditBox\EditBox.cpp" />
     <ClCompile Include="Source\Window\Elements\Element.cpp" />
     <ClCompile Include="Source\Window\Elements\Initializer.cpp" />
+    <ClCompile Include="Source\Window\Elements\Text\Text.cpp" />
     <ClCompile Include="Source\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="Source\Window\Elements\EditBox\EditBox.h" />
     <ClInclude Include="Source\Window\Elements\Element.h" />
     <ClInclude Include="Source\Window\Elements\Initializer.h" />
+    <ClInclude Include="Source\Window\Elements\Text\Text.h" />
     <ClInclude Include="Source\Window\Window.h" />
   </ItemGroup>
   <ItemGroup>

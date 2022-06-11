@@ -290,23 +290,45 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     int InterEditboxMargin = 6;
 
+    int TextAdjust = (700 * Scale) - MarginLR - 72 - 31 - 10;
+
     // Main colors RGBA
     ColEditBox* RGBEditBox = new ColEditBox();
     RGBEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB + InterEditboxMargin * 0, 72, 18);
     RGBEditBox->SetText(L"Test");
     elements.push_back(RGBEditBox);
+    
+    ColText* RGBText = new ColText();
+    RGBText->Register(hI, hwnd, TextAdjust, MarginTB + InterEditboxMargin * 0, 31, 18);
+    RGBText->SetText(L"rgb");
+    elements.push_back(RGBText);
 
     ColEditBox* HEXEditBox = new ColEditBox();
     HEXEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 2 + InterEditboxMargin * 1, 72, 18);
     elements.push_back(HEXEditBox);
 
+    ColText* HEXText = new ColText();
+    HEXText->Register(hI, hwnd, TextAdjust, MarginTB * 2 + InterEditboxMargin * 1, 31, 18);
+    HEXText->SetText(L"hex");
+    elements.push_back(HEXText);
+
     ColEditBox* CMYKEditBox = new ColEditBox();
     CMYKEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 3 + InterEditboxMargin * 2, 72, 18);
     elements.push_back(CMYKEditBox);
 
+    ColText* CMYKText = new ColText();
+    CMYKText->Register(hI, hwnd, TextAdjust, MarginTB * 3 + InterEditboxMargin * 2, 31, 18);
+    CMYKText->SetText(L"cmyk");
+    elements.push_back(CMYKText);
+
     ColEditBox* PMSEditBox = new ColEditBox();
     PMSEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 4 + InterEditboxMargin * 3, 72, 18);
     elements.push_back(PMSEditBox);
+
+    ColText* PMSText = new ColText();
+    PMSText->Register(hI, hwnd, TextAdjust, MarginTB * 4 + InterEditboxMargin * 3, 31, 18);
+    PMSText->SetText(L"pms");
+    elements.push_back(PMSText);
 
     // Alpha in 10 and 16
     ColEditBox* Alpha10EditBox = new ColEditBox();
@@ -314,4 +336,9 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColEditBox* Alpha16EditBox = new ColEditBox();
     if(Alpha16EditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72 + 72/2 + 2, MarginTB * 5 + InterEditboxMargin * 4, 72 / 2 - 1, 18)) elements.push_back(Alpha16EditBox);
+
+    ColText* AlphaText = new ColText();
+    AlphaText->Register(hI, hwnd, TextAdjust, MarginTB * 5 + InterEditboxMargin * 4, 31, 18);
+    AlphaText->SetText(L"alpha");
+    elements.push_back(AlphaText);
 }

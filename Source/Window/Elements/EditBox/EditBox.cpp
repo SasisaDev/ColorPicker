@@ -62,12 +62,12 @@ int ColEditBox::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
         return 0;
     }
 
-    Gdiplus::Font Font(*hdc, CreateFont(-99, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 
+    Gdiplus::Font Font(*hdc, CreateFont(18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 
         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, 
         VARIABLE_PITCH, L"Segoe UI"));
 
-    int result = graphics->DrawString(text.c_str(), text.size(), &Font, Gdiplus::PointF(area.left,
-        area.top), new Gdiplus::SolidBrush(Gdiplus::Color(255, 255, 255, 255)));
+    int result = graphics->DrawString(text.c_str(), text.size(), &Font, Gdiplus::PointF(area.left+2,
+        area.top), Gdiplus::StringFormat::GenericDefault(), new Gdiplus::SolidBrush(Gdiplus::Color::Black));
     if (result != Gdiplus::Status::Ok)
     {
         return 0;
