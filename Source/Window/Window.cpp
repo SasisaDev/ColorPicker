@@ -295,7 +295,7 @@ void Window::PopulateClientWithWindows(HWND hwnd)
     // Main colors RGBA
     ColEditBox* RGBEditBox = new ColEditBox();
     RGBEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB + InterEditboxMargin * 0, 72, 18);
-    RGBEditBox->SetText(L"Test");
+    RGBEditBox->SetText(L"255, 255, 255");
     elements.push_back(RGBEditBox);
     
     ColText* RGBText = new ColText();
@@ -305,6 +305,7 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColEditBox* HEXEditBox = new ColEditBox();
     HEXEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 2 + InterEditboxMargin * 1, 72, 18);
+    HEXEditBox->SetText(L"#FFFFFF");
     elements.push_back(HEXEditBox);
 
     ColText* HEXText = new ColText();
@@ -314,6 +315,7 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColEditBox* CMYKEditBox = new ColEditBox();
     CMYKEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 3 + InterEditboxMargin * 2, 72, 18);
+    CMYKEditBox->SetText(L"100, 100, 100, 100");
     elements.push_back(CMYKEditBox);
 
     ColText* CMYKText = new ColText();
@@ -333,9 +335,11 @@ void Window::PopulateClientWithWindows(HWND hwnd)
     // Alpha in 10 and 16
     ColEditBox* Alpha10EditBox = new ColEditBox();
     if(Alpha10EditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 5 + InterEditboxMargin * 4, 72 / 2 - 1, 18)) elements.push_back(Alpha10EditBox);
+    Alpha10EditBox->SetText(L"255");
 
     ColEditBox* Alpha16EditBox = new ColEditBox();
     if(Alpha16EditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72 + 72/2 + 2, MarginTB * 5 + InterEditboxMargin * 4, 72 / 2 - 1, 18)) elements.push_back(Alpha16EditBox);
+    Alpha16EditBox->SetText(L"FF");
 
     ColText* AlphaText = new ColText();
     AlphaText->Register(hI, hwnd, TextAdjust, MarginTB * 5 + InterEditboxMargin * 4, 31, 18);
@@ -346,6 +350,10 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColColorPicker* ColorPicker = new ColColorPicker();
     ColorPicker->Register(hI, hwnd, MarginLR, MarginTB, 364 * Scale, 364 * Scale);
-    ColorPicker->SetRepaintCallback(std::bind(&Window::RefreshWindow, this));
     elements.push_back(ColorPicker);
+
+    for (ColElement* element : elements)
+    {
+        element->SetRepaintCallback(std::bind(&Window::RefreshWindow, this));
+    }
 }

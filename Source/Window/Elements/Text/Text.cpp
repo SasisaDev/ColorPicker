@@ -9,6 +9,10 @@ int ColText::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, in
 void ColText::SetText(LPCWSTR _Text)
 {
     text = _Text;
+    if (rerenderCallback)
+    {
+        rerenderCallback();
+    }
 }
 
 int ColText::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
