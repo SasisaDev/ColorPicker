@@ -124,7 +124,7 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
     winClass.hIcon = hIcon;
     winClass.hCursor = LoadCursor(NULL, IDC_ARROW);
     winClass.lpszClassName = CLASS_NAME;
-    //winClass.hbrBackground = (HBRUSH)COLOR_BACKGROUND;
+    winClass.hbrBackground = (HBRUSH)0;
 
     winClass.lpszMenuName = NULL;
     winClass.cbClsExtra = 0;
@@ -187,6 +187,8 @@ bool Window::StartWindow()
 
     AlignWindowToNotify(hWnd);
 
+    OnPaint(hWnd);
+
     return true;
 }
 
@@ -201,6 +203,53 @@ int Window::LoopWindow()
     }
 
     return msg.wParam;
+}
+
+void Window::OnPaint(HWND hwnd)
+{
+    RECT wndRect;
+    ::GetWindowRect(hwnd, &wndRect);
+    SIZE wndSize = { wndRect.right - wndRect.left,wndRect.bottom - wndRect.top };
+    HDC hdc = ::GetDC(hwnd);
+    HDC memDC = ::CreateCompatibleDC(hdc);
+    HBITMAP memBitmap = ::CreateCompatibleBitmap(hdc, wndSize.cx, wndSize.cy);
+    ::SelectObject(memDC, memBitmap);
+    ::SetBkMode(memDC, TRANSPARENT);
+
+    Gdiplus::Graphics graphics(memDC);
+
+    graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
+
+    HDC screenDC = GetDC(NULL);
+    POINT ptSrc = { 0,0 };
+
+    BLENDFUNCTION blendFunction;
+    blendFunction.AlphaFormat = AC_SRC_ALPHA;
+    blendFunction.BlendFlags = 0;
+    blendFunction.BlendOp = AC_SRC_OVER;
+    blendFunction.SourceConstantAlpha = 255;
+
+    //::AlphaBlend(screenDC, 0, 0, wndSize.cx, wndSize.cy, memDC, 0, 0, wndSize.cx, wndSize.cy, blendFunction);
+
+    Gdiplus::ImageAttributes imAtt;
+    imAtt.SetColorKey(Gdiplus::Color(0, 0, 0), Gdiplus::Color(128, 128, 128), Gdiplus::ColorAdjustTypeBitmap);
+
+    //graphics.DrawImage(ArrowBmp, (INT)(((700) / 2 - (73) / 2) * Scale), (INT)((516 - 35) * Scale), (INT)(73 * Scale), (INT)(35 * Scale));
+    //graphics.DrawImage(BackgroundBmp, 0, 0, (INT)(700 * Scale), (INT)((516 - 35) * Scale));
+
+    Gdiplus::Rect arrowdest = { (INT)(((700) / 2 - (73) / 2) * Scale), (INT)((516 - 35) * Scale), (INT)(73 * Scale), (INT)(35 * Scale) };
+    graphics.DrawImage(ArrowBmp, arrowdest, (INT)0, (INT)0, (INT)73, (INT)35, Gdiplus::Unit::UnitPixel, &imAtt);
+
+    Gdiplus::Rect bodydest = { 0, 0, (INT)(700 * Scale), (INT)((516 - 35) * Scale) };
+    graphics.DrawImage(BackgroundBmp, bodydest, (INT)0, (INT)0, (INT)700, (INT)516-35, Gdiplus::Unit::UnitPixel, &imAtt);
+
+    if (::UpdateLayeredWindow(hwnd, screenDC, &ptSrc, &wndSize, memDC, &ptSrc, 0, &blendFunction, ULW_ALPHA) == 0)
+    {
+        exit(-1);
+    }
+
+    ::DeleteDC(memDC);
+    ::DeleteObject(memBitmap);
 }
 
 void AlignWindowToNotify(HWND _hwnd)

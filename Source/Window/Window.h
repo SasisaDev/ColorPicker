@@ -33,6 +33,8 @@ public:
 
 	bool StartWindow();
 	int LoopWindow();
+
+	void OnPaint(HWND hwnd);
 };
 
 #elif defined(__APPLE__)
