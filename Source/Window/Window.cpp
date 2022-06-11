@@ -65,48 +65,39 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             AlignWindowToNotify(hwnd);
             SetFocus(hwnd);
         }
-        break;
-    case WM_PAINT:
-    {
-        hdc = BeginPaint(hwnd, &ps);
-        Gdiplus::Graphics graphics(hdc);
-
-        HDC hdcScreen = GetDC(NULL);
-        HDC hdcMem = CreateCompatibleDC(hdc);
-
-        // use the source image's alpha channel for blending
-        BLENDFUNCTION blend = { 0 };
-        blend.BlendOp = AC_SRC_OVER;
-        blend.SourceConstantAlpha = 255;
-        blend.AlphaFormat = AC_SRC_ALPHA;
-
-        //UpdateLayeredWindow(hwnd, hdcScreen, 0, 0,
-        //    hdcMem, 0, RGB(0, 0, 0), &blend, ULW_ALPHA);
-
-        // Get rect
-        RECT ClientRect;
-        GetClientRect(hwnd, &ClientRect);
-
-        POINT pptDst = { ClientRect.left, ClientRect.top };
-        SIZE psize = { ClientRect.right - ClientRect.left, ClientRect.bottom - ClientRect.top };
-
-        Gdiplus::Color c(0, 255, 0, 0); // ARGB = 0x00FF0000
-        //graphics.Clear(c);
-
-        // Draw background
-        graphics.DrawImage(ArrowBmp, (INT)(((700) / 2 - (73) / 2) * Scale  ), (INT)((516-35) * Scale), (INT)(73 * Scale), (INT)(35 * Scale));
-        graphics.DrawImage(BackgroundBmp, 0, 0, (INT)(700 * Scale), (INT)((516 - 35) * Scale));
-
-        if (UpdateLayeredWindow(hwnd, hdc, &pptDst, &psize, hdcMem, &pptDst, RGB(0, 0, 0), &blend, ULW_ALPHA) == 0)
+        else if (lParam == WM_RBUTTONDOWN)
         {
-            exit(-1);
+            HMENU hMenu = CreatePopupMenu();
+
+            if (hMenu) {
+                InsertMenu(hMenu, -1, MF_BYPOSITION, 15668, L"About");
+                InsertMenu(hMenu, -1, MF_BYPOSITION | MF_CALLBACKS | MF_BYCOMMAND, 15667, L"Exit");
+
+                POINT pt;
+                GetCursorPos(&pt);
+                SetForegroundWindow(hwnd);
+                TrackPopupMenu(hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
+                PostMessage(hwnd, WM_NULL, 0, 0);
+                DestroyMenu(hMenu);
+            }
         }
-
-        EndPaint(hwnd, &ps);
-
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
         break;
-    }
+    case WM_COMMAND:
+        switch (LOWORD(wParam)) {
+            case 15667:
+                DeleteDC(hdcMem);
+                DeleteObject(hArrowBmp);
+                DeleteObject(hBackgroundBmp);
+
+                if (Icon) Icon->RemoveIcon();
+                exit(0);
+                break;
+            case 15668:
+                MessageBox(hwnd, L"Created and managed by Sasisa\nGithub: SasisaDev/ColorPicker", L"About", MB_OK | MB_ICONINFORMATION);
+                break;
+
+        }
     default:
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
         break;
