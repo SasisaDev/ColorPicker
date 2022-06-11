@@ -6,6 +6,7 @@
 #include <objidl.h>
 #include <atlimage.h>
 #include <gdiplus.h>
+#include <vector>
 
 #include "Elements/Initializer.h"
 
@@ -23,16 +24,19 @@ protected:
 	HINSTANCE hInstance;
 	const wchar_t* CLASS_NAME;
 	
+	std::vector<ColElement*> elements;
 public:
 	Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName);
 	~Window();
 
 	HWND* GetHWND() {return &hWnd;}
 
-	static void PopulateClientWithWindows(HWND hwnd);
+	void PopulateClientWithWindows(HWND hwnd);
 
 	bool StartWindow();
 	int LoopWindow();
+
+	void RefreshWindow();
 
 	void OnPaint(HWND hwnd);
 };

@@ -30,6 +30,9 @@
     <ClCompile Include="Source\Window\Elements\Initializer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Window\Elements\Element.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NotificationInterface\Notify.h">
@@ -47,6 +50,12 @@
     <ClInclude Include="Source\Window\Elements\EditBox\EditBox.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Window\Elements\basedef.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Window\Elements\Element.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
@@ -61,6 +70,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\..\..\Downloads\Arrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\Downloads\TextBox.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -2,5 +2,5 @@
 
 void RegisterAllElements(HINSTANCE h)
 {
-RegisterEditBox(h);
+
 }

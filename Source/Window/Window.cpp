@@ -1,10 +1,9 @@
 #include "Window.h"
 
 #include "../../resource.h"
+#include "Elements/basedef.h"
 
 NotifyIcon* Icon;
-
-float Scale = 0.4f;
 
 HBITMAP hArrowBmp, hBackgroundBmp;
 Gdiplus::Bitmap *ArrowBmp, *BackgroundBmp;
@@ -16,8 +15,6 @@ HINSTANCE hI;
 //GDI+
 ULONG_PTR WinGDIToken;
 
-void SetBlendFunctionSetiings(BLENDFUNCTION& blendFunction);
-
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static BITMAPINFOHEADER* pbmi = NULL;
@@ -28,8 +25,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
         // Gather HINSTANCE
         hI = reinterpret_cast<HINSTANCE>(GetWindowLong(hwnd, GWL_HINSTANCE));
-       
-        Window::PopulateClientWithWindows(hwnd);
 
         // Gather resources' handles
         hArrowBmp = reinterpret_cast<HBITMAP>(::LoadImage(hI, MAKEINTRESOURCE(IDB_BITMAP2), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
@@ -136,7 +131,7 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
         WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_LAYERED,            // Window style
         CLASS_NAME,                     // Window class
         L"Color Picker",    // Window text
-        WS_VISIBLE | WS_POPUP,            // Window style
+        WS_VISIBLE | WS_POPUP | WS_CLIPCHILDREN,            // Window style
 
         // Size and position
         CW_USEDEFAULT, CW_USEDEFAULT, 700 * Scale, 516 * Scale,
@@ -146,6 +141,8 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
         hInstance,  // Instance handle
         NULL        // Additional application data
     );
+
+    Window::PopulateClientWithWindows(hWnd);
 
     //SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 0, ULW_COLORKEY);
     //SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
@@ -176,9 +173,9 @@ bool Window::StartWindow()
     
     Icon->AddIcon();
 
-    AlignWindowToNotify(hWnd);
+    RefreshWindow();
 
-    OnPaint(hWnd);
+    UpdateWindow(hWnd);
 
     return true;
 }
@@ -194,6 +191,12 @@ int Window::LoopWindow()
     }
 
     return msg.wParam;
+}
+
+void Window::RefreshWindow()
+{
+    OnPaint(hWnd);
+    AlignWindowToNotify(hWnd);
 }
 
 void Window::OnPaint(HWND hwnd)
@@ -234,10 +237,23 @@ void Window::OnPaint(HWND hwnd)
     Gdiplus::Rect bodydest = { 0, 0, (INT)(700 * Scale), (INT)((516 - 35) * Scale) };
     graphics.DrawImage(BackgroundBmp, bodydest, (INT)0, (INT)0, (INT)700, (INT)516-35, Gdiplus::Unit::UnitPixel, &imAtt);
 
+    // Render all elements
+    for (ColElement* element : elements)
+    {
+        if (element->Paint(&memDC, &graphics) == 0)
+        {
+            printf("");
+        }
+    }
+
     if (::UpdateLayeredWindow(hwnd, screenDC, &ptSrc, &wndSize, memDC, &ptSrc, 0, &blendFunction, ULW_ALPHA) == 0)
     {
         exit(-1);
     }
+
+    hdc = BeginPaint(hwnd, &ps);
+
+    EndPaint(hwnd, &ps);
 
     ::DeleteDC(memDC);
     ::DeleteObject(memBitmap);
@@ -269,13 +285,33 @@ void AlignWindowToNotify(HWND _hwnd)
 
 void Window::PopulateClientWithWindows(HWND hwnd)
 {
-    CreateWindow(L"edit", L"Test ", WS_VISIBLE | WS_CHILD, 50, 50, 100, 100, hwnd, NULL, hI, NULL);
-}
+    int MarginLR = 15;
+    int MarginTB = 15;
 
-void SetBlendFunctionSetiings(BLENDFUNCTION& blendFunction)
-{
-    blendFunction.AlphaFormat = AC_SRC_ALPHA;
-    blendFunction.BlendFlags = 0;
-    blendFunction.BlendOp = AC_SRC_OVER;
-    blendFunction.SourceConstantAlpha = 220;
+    int InterEditboxMargin = 6;
+
+    // Main colors RGBA
+    ColEditBox* RGBEditBox = new ColEditBox();
+    RGBEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB + InterEditboxMargin * 0, 72, 18);
+    RGBEditBox->SetText(L"Test");
+    elements.push_back(RGBEditBox);
+
+    ColEditBox* HEXEditBox = new ColEditBox();
+    HEXEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 2 + InterEditboxMargin * 1, 72, 18);
+    elements.push_back(HEXEditBox);
+
+    ColEditBox* CMYKEditBox = new ColEditBox();
+    CMYKEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 3 + InterEditboxMargin * 2, 72, 18);
+    elements.push_back(CMYKEditBox);
+
+    ColEditBox* PMSEditBox = new ColEditBox();
+    PMSEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 4 + InterEditboxMargin * 3, 72, 18);
+    elements.push_back(PMSEditBox);
+
+    // Alpha in 10 and 16
+    ColEditBox* Alpha10EditBox = new ColEditBox();
+    if(Alpha10EditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 5 + InterEditboxMargin * 4, 72 / 2 - 1, 18)) elements.push_back(Alpha10EditBox);
+
+    ColEditBox* Alpha16EditBox = new ColEditBox();
+    if(Alpha16EditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72 + 72/2 + 2, MarginTB * 5 + InterEditboxMargin * 4, 72 / 2 - 1, 18)) elements.push_back(Alpha16EditBox);
 }
