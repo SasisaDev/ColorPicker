@@ -25,6 +25,23 @@ Gdiplus::Rect ColElement::GetRectOnCanvas()
 	return dest;
 }
 
+HWND ColElement::GetOwner() const
+{
+	return owner;
+}
+
+void ColElement::OnClick(WPARAM e, int x, int y)
+{
+}
+
+void ColElement::Rerender()
+{
+	if (rerenderCallback)
+	{
+		rerenderCallback();
+	}
+}
+
 int ColElement::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 {
 	return 0;

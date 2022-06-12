@@ -8,6 +8,7 @@
 #define IDI_PICKERLOGO "picker.ico"
 
 HWND* hwnd;
+Window* MainWindow = nullptr;
 
 LRESULT CALLBACK Hookproc(int code, WPARAM wParam, LPARAM lParam)
 {
@@ -27,6 +28,7 @@ LRESULT CALLBACK Hookproc(int code, WPARAM wParam, LPARAM lParam)
             ShowWindow(*hwnd, SW_HIDE);
         }
         
+        MainWindow->SendToClickListeners(wParam, p.x, p.y);
     }
 
     return CallNextHookEx(NULL, code, wParam, lParam);
@@ -48,14 +50,14 @@ int WINAPI WinMain(
         return 0;
     }
 
-    Window MainWindow(hIcon, hInstance, CLASS_NAME);
-    MainWindow.StartWindow();
-    hwnd = MainWindow.GetHWND();
+    MainWindow = new Window(hIcon, hInstance, CLASS_NAME);
+    MainWindow->StartWindow();
+    hwnd = MainWindow->GetHWND();
 
     HHOOK GlobalClickHook;
     GlobalClickHook = SetWindowsHookEx(WH_MOUSE_LL, Hookproc, hInstance, 0);
 
-    auto ret = MainWindow.LoopWindow();
+    auto ret = MainWindow->LoopWindow();
     UnhookWindowsHookEx(GlobalClickHook);
     return ret;
 }

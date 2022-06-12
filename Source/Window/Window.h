@@ -38,6 +38,8 @@ public:
 
 	void RefreshWindow();
 
+	void SendToClickListeners(WPARAM e, int x, int y);
+
 	void OnPaint(HWND hwnd);
 };
 

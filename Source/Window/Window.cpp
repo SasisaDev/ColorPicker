@@ -199,6 +199,14 @@ void Window::RefreshWindow()
     AlignWindowToNotify(hWnd);
 }
 
+void Window::SendToClickListeners(WPARAM e, int x, int y)
+{
+    for (auto element : elements)
+    {
+        element->OnClick(e, x, y);
+    }
+}
+
 void Window::OnPaint(HWND hwnd)
 {
     RECT wndRect;
@@ -349,7 +357,9 @@ void Window::PopulateClientWithWindows(HWND hwnd)
     // Color picker
 
     ColColorPicker* ColorPicker = new ColColorPicker();
-    ColorPicker->Register(hI, hwnd, MarginLR, MarginTB, 364 * Scale, 364 * Scale);
+    ColorPicker->Register(hI, hwnd, MarginLR, MarginTB, 275 * Scale, 275 * Scale);
+    ColorPicker->SetColor(255, 255, 255);
+    ColorPicker->SetHue(0);
     elements.push_back(ColorPicker);
 
     for (ColElement* element : elements)

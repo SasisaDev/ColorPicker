@@ -1,8 +1,40 @@
 #include "ColorPicker.h"
 
+bool ColColorPicker::ClassRegistered = false;
+Gdiplus::Bitmap* ColColorPicker::Background = nullptr;
+
+LRESULT CALLBACK ColColorPickerProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+    case WM_LBUTTONDOWN:
+        
+        break;
+    default:
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
+        break;
+    }
+}
+
 int ColColorPicker::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, int cy)
 {
-	return 0;
+    ColElement::Register(hInstance, hOwner, x, y, cx, cy);
+
+    if (!ColColorPicker::ClassRegistered)
+    {
+        WNDCLASS Class = {};
+        Class.lpfnWndProc = ColColorPickerProc;
+        Class.hInstance = hInstance;
+        Class.hCursor = LoadCursor(NULL, IDC_CROSS);
+        Class.lpszClassName = EL_PICKER;
+
+        RegisterClass(&Class);
+        ColColorPicker::ClassRegistered = true;
+    }
+
+    handle = CreateWindow(EL_PICKER, L"", WS_VISIBLE | WS_CHILD, x, y, cx, cy, hOwner, 0, hInstance, 0);
+
+	return 1;
 }
 
 void ColColorPicker::SetHue(int hue)
@@ -26,23 +58,24 @@ Gdiplus::Color ColColorPicker::GetColor()
 
 int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 {
-	Background = new Gdiplus::Bitmap(GetRectOnCanvas().Width, GetRectOnCanvas().Height,
+    ColColorPicker::Background = new Gdiplus::Bitmap(GetRectOnCanvas().Width, GetRectOnCanvas().Height,
 		PixelFormat24bppRGB);
-	Gdiplus::Graphics* pGr = Gdiplus::Graphics::FromImage(Background);
+	Gdiplus::Graphics* pGr = Gdiplus::Graphics::FromImage(ColColorPicker::Background);
+
+    
 	
 	// Render to background
-    // Make 2 gradients interpolation
-    Gdiplus::LinearGradientBrush myLinearGradientBrush(
-        Gdiplus::Rect(),
-        Gdiplus::Color(0, 0, 0, 255),
-        Gdiplus::Color(255, 0, 255, 0),
-        Gdiplus::LinearGradientModeHorizontal);
+    // Make 2 gradients interpolation with multiply blending
+    Gdiplus::SolidBrush brush(Gdiplus::Color(255, 0, 0));
+
+    pGr->FillRectangle(&brush, Gdiplus::Rect(0, 0, GetRectOnCanvas().Width, GetRectOnCanvas().Height));
+
 
 	// Render background to hdc
-	graphics->DrawImage(Background, GetRectOnCanvas());
+	graphics->DrawImage(ColColorPicker::Background, GetRectOnCanvas());
 
-
-	return 0;
+    
+	return 1;
 }
 
 Gdiplus::Color HSVtoRGB(float H, float S, float V)

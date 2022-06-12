@@ -18,6 +18,11 @@ public:
 	void SetRepaintCallback(std::function<void()> callback);
 
 	Gdiplus::Rect GetRectOnCanvas();
+	HWND GetOwner() const;
+
+	void OnClick(WPARAM e, int x, int y);
+
+	void Rerender();
 
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics);
 };

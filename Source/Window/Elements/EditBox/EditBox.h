@@ -10,7 +10,10 @@ protected:
 	std::wstring text;
 
 	int selectedRange[2];
+
+	Gdiplus::RectF textBounds;
 public:
+	WNDPROC OldWndProc;
 
 	virtual int Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, int cy) override;
 
@@ -19,6 +22,8 @@ public:
 
 	void SetText(LPCWSTR _Text);
 	std::wstring GetText();
+
+	int GetCharacterWidth();
 	
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
 };
