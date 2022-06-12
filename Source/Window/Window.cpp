@@ -12,6 +12,8 @@ PAINTSTRUCT ps;
 HDC hdc, hdcMem;
 HINSTANCE hI;
 
+HMENU hMenu;
+
 //GDI+
 ULONG_PTR WinGDIToken;
 
@@ -62,11 +64,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         else if (lParam == WM_RBUTTONDOWN)
         {
-            HMENU hMenu = CreatePopupMenu();
+            hMenu = CreatePopupMenu();
 
             if (hMenu) {
                 InsertMenu(hMenu, -1, MF_BYPOSITION, 15668, L"About");
-                InsertMenu(hMenu, -1, MF_BYPOSITION | MF_CALLBACKS | MF_BYCOMMAND, 15667, L"Exit");
+                InsertMenu(hMenu, -1, MF_BYPOSITION | MFS_CHECKED, 15669, L"Autorun");
+                InsertMenu(hMenu, -1, MF_BYPOSITION, 15667, L"Exit");
 
                 POINT pt;
                 GetCursorPos(&pt);
@@ -91,12 +94,29 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             case 15668:
                 MessageBox(hwnd, L"Created and managed by Sasisa\nGithub: SasisaDev/ColorPicker", L"About", MB_OK | MB_ICONINFORMATION);
                 break;
-
+            case 15669:
+                MENUITEMINFO menuItem = { 0 };
+                menuItem.cbSize = sizeof(MENUITEMINFO);
+                menuItem.fMask = MIIM_STATE;
+                GetMenuItemInfo(hMenu, 15669, FALSE, &menuItem);
+                
+                if (menuItem.fState == MFS_UNCHECKED)
+                {
+                    // Setup Autorun
+                    // ...
+                    menuItem.fState == MFS_CHECKED;
+                }
+                else
+                {
+                    // De Autorun
+                    // ...
+                    menuItem.fState == MFS_CHECKED;
+                }
+                SetMenuItemInfo(hMenu, 15669, FALSE, &menuItem);
+                break;
         }
-    default:
-        return DefWindowProc(hwnd, uMsg, wParam, lParam);
-        break;
     }
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
@@ -252,7 +272,7 @@ void Window::OnPaint(HWND hwnd)
     {
         if (element->Paint(&memDC, &graphics) == 0)
         {
-            printf("");
+            printf("Element couldn't be rendered. \n");
         }
     }
 

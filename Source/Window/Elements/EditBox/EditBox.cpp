@@ -206,17 +206,18 @@ int ColEditBox::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
         && (selectedRange[1] >= 0 && selectedRange[1] < text.size()))
     {
         Gdiplus::Rect SelectionRect;
-        if (selectedRange[1] >= selectedRange[0])
+        Gdiplus::Color SelectionColor(200, 66, 135, 245);
+        if (selectedRange[1] > selectedRange[0])
         {
             SelectionRect = { (GetRectOnCanvas().X + 5) + selectedRange[0] * GetCharacterWidth(), GetRectOnCanvas().Y,
             selectedRange[1] * GetCharacterWidth() - selectedRange[0] * GetCharacterWidth() + 2, GetRectOnCanvas().Height };
         }
-        else
+        else if(selectedRange[1] < selectedRange[0])
         {
             SelectionRect = { (GetRectOnCanvas().X + 5) + selectedRange[1] * GetCharacterWidth(), GetRectOnCanvas().Y,
             selectedRange[0] * GetCharacterWidth() - selectedRange[1] * GetCharacterWidth() + 2, GetRectOnCanvas().Height };
         }
-        graphics->FillRectangle(new Gdiplus::SolidBrush(Gdiplus::Color(200, 66, 135, 245)), SelectionRect);
+        graphics->FillRectangle(new Gdiplus::SolidBrush(SelectionColor), SelectionRect);
     }
 
     int result = graphics->DrawString(text.c_str(), text.size(), &Font, TextLayout, Gdiplus::StringFormat::GenericDefault(), new Gdiplus::SolidBrush(Gdiplus::Color::Black));
