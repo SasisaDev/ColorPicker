@@ -111,6 +111,7 @@ Window::Window(HICON Icon, HINSTANCE hInst, const wchar_t* ClassName)
     winClass.hCursor = LoadCursor(NULL, IDC_ARROW);
     winClass.lpszClassName = CLASS_NAME;
     winClass.hbrBackground = (HBRUSH)0;
+    winClass.style = CS_DBLCLKS;
 
     winClass.lpszMenuName = NULL;
     winClass.cbClsExtra = 0;

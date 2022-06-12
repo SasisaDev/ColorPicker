@@ -19,8 +19,6 @@ LRESULT CALLBACK Hookproc(int code, WPARAM wParam, LPARAM lParam)
 
     if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN)
     {
-        
-
         RECT rect = { };
         GetWindowRect(*hwnd, &rect);
 

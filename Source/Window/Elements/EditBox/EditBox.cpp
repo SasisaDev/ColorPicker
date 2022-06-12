@@ -36,11 +36,13 @@ int ColEditBox::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx,
 
 void ColEditBox::SelectPos1(int x)
 {
+    if(x >= -1 || x < text.size())
     selectedRange[0] = x;
 }
 
 void ColEditBox::SelectPos2(int x)
 {
+    if (x >= -1 || x < text.size())
     selectedRange[1] = x;
 }
 
@@ -103,6 +105,14 @@ void ColEditBox::OnClick(WPARAM e, int x, int y)
         }
         break;
     case WM_LBUTTONUP:
+        // TODO: SelectPos to -1 if out-bounds
+        tickTimer = false;
+        break;
+    case WM_LBUTTONDBLCLK:
+        SelectPos1(0);
+        SelectPos2(text.size()-1);
+        Rerender();
+
         tickTimer = false;
         break;
     }
@@ -179,8 +189,8 @@ int ColEditBox::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 
     graphics->MeasureString(text.c_str(), text.size(), &Font, TextLayout, &textBounds);
 
-    if((selectedRange[0] > 0 || selectedRange[0] < text.size())
-        && (selectedRange[1] > 0 || selectedRange[1] < text.size()))
+    if((selectedRange[0] > 0 && selectedRange[0] < text.size())
+        && (selectedRange[1] > 0 && selectedRange[1] < text.size()))
     {
         Gdiplus::Rect SelectionRect;
         if (selectedRange[1] >= selectedRange[0])
