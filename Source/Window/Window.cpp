@@ -224,7 +224,8 @@ void Window::OnPaint(HWND hwnd)
     graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
 
     HDC screenDC = GetDC(NULL);
-    POINT ptSrc = { 0,0 };
+    POINT ptSrc = { 0, 0 };
+    POINT ptDst = { wndRect.left, wndRect.top };
 
     BLENDFUNCTION blendFunction;
     blendFunction.AlphaFormat = AC_SRC_ALPHA;
@@ -255,7 +256,7 @@ void Window::OnPaint(HWND hwnd)
         }
     }
 
-    if (::UpdateLayeredWindow(hwnd, screenDC, &ptSrc, &wndSize, memDC, &ptSrc, 0, &blendFunction, ULW_ALPHA) == 0)
+    if (::UpdateLayeredWindow(hwnd, screenDC, &ptDst, &wndSize, memDC, &ptSrc, 0, &blendFunction, ULW_ALPHA) == 0)
     {
         exit(-1);
     }
