@@ -36,14 +36,28 @@ int ColEditBox::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx,
 
 void ColEditBox::SelectPos1(int x)
 {
-    if(x >= -1 || x < text.size())
-    selectedRange[0] = x;
+    if (x >= -1 || x < text.size())
+    {
+        selectedRange[0] = x;
+    }
+    
+    if (x >= text.size())
+    {
+        selectedRange[0] = text.size()-1;
+    }
 }
 
 void ColEditBox::SelectPos2(int x)
 {
     if (x >= -1 || x < text.size())
-    selectedRange[1] = x;
+    {
+        selectedRange[1] = x;
+    }
+    
+    if (x >= text.size())
+    {
+        selectedRange[1] = text.size() - 1;
+    }
 }
 
 void ColEditBox::SetText(LPCWSTR _Text)
@@ -73,19 +87,19 @@ void ColEditBox::OnClick(WPARAM e, int x, int y)
     POINT WinCur;
     POINT EditCur;
 
+    GetCursorPos(&cur);
+
+    GetWindowRect(GetOwner(), &win);
+
+    WinCur.x = cur.x - win.left;
+    WinCur.y = cur.y - win.top;
+
+    EditCur.x = WinCur.x - GetRectOnCanvas().X;
+    EditCur.y = WinCur.y - GetRectOnCanvas().Y;
+
     switch (e)
     {
     case WM_LBUTTONDOWN:
-        GetCursorPos(&cur);
-
-        GetWindowRect(GetOwner(), &win);
-
-        WinCur.x = cur.x - win.left;
-        WinCur.y = cur.y - win.top;
-
-        EditCur.x = WinCur.x - GetRectOnCanvas().X;
-        EditCur.y = WinCur.y - GetRectOnCanvas().Y;
-
         if (EditCur.x >= 0 && EditCur.x <= GetRectOnCanvas().Width
             && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
         {
@@ -105,7 +119,6 @@ void ColEditBox::OnClick(WPARAM e, int x, int y)
         }
         break;
     case WM_LBUTTONUP:
-        // TODO: SelectPos to -1 if out-bounds
         tickTimer = false;
         break;
     case WM_LBUTTONDBLCLK:
@@ -189,8 +202,8 @@ int ColEditBox::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 
     graphics->MeasureString(text.c_str(), text.size(), &Font, TextLayout, &textBounds);
 
-    if((selectedRange[0] > 0 && selectedRange[0] < text.size())
-        && (selectedRange[1] > 0 && selectedRange[1] < text.size()))
+    if((selectedRange[0] >= 0 && selectedRange[0] < text.size())
+        && (selectedRange[1] >= 0 && selectedRange[1] < text.size()))
     {
         Gdiplus::Rect SelectionRect;
         if (selectedRange[1] >= selectedRange[0])
@@ -203,7 +216,7 @@ int ColEditBox::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
             SelectionRect = { (GetRectOnCanvas().X + 5) + selectedRange[1] * GetCharacterWidth(), GetRectOnCanvas().Y,
             selectedRange[0] * GetCharacterWidth() - selectedRange[1] * GetCharacterWidth() + 2, GetRectOnCanvas().Height };
         }
-        graphics->FillRectangle(new Gdiplus::SolidBrush(Gdiplus::Color(66, 135, 245)), SelectionRect);
+        graphics->FillRectangle(new Gdiplus::SolidBrush(Gdiplus::Color(200, 66, 135, 245)), SelectionRect);
     }
 
     int result = graphics->DrawString(text.c_str(), text.size(), &Font, TextLayout, Gdiplus::StringFormat::GenericDefault(), new Gdiplus::SolidBrush(Gdiplus::Color::Black));
