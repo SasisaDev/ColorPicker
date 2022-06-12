@@ -88,13 +88,33 @@ void ColEditBox::OnClick(WPARAM e, int x, int y)
             && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
         {
             SelectPos1(EditCur.x / GetCharacterWidth());
+            TimerThread = new std::thread(&ColEditBox::ThreadTimer, this);
+            tickTimer = true;
         }
         else
         {
             SelectPos1(-1);
+            tickTimer = false;
         }
         break;
     case WM_LBUTTONUP:
+        tickTimer = false;
+        break;
+    }
+}
+
+void ColEditBox::ThreadTimer()
+{
+    using namespace std;
+    using namespace std::chrono;
+timer:
+    if (tickTimer)
+    {
+        POINT cur;
+        RECT win;
+        POINT WinCur;
+        POINT EditCur;
+
         GetCursorPos(&cur);
 
         GetWindowRect(GetOwner(), &win);
@@ -113,10 +133,19 @@ void ColEditBox::OnClick(WPARAM e, int x, int y)
         }
         else
         {
-            SelectPos2(-1);
+            if (EditCur.x < 0)
+            {
+                SelectPos2(0);
+            }
+            else
+            {
+                SelectPos2(text.size() - 1);
+            }
             Rerender();
         }
-        break;
+
+        this_thread::sleep_for(100ms);
+        goto timer;
     }
 }
 

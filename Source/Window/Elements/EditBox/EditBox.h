@@ -2,6 +2,7 @@
 #if defined(WIN32)
 #include "../Element.h"
 #include <string>
+#include <thread>
 #define EL_EDITBOX L"colpik_editbox"
 
 class ColEditBox : public ColElement {
@@ -12,6 +13,9 @@ protected:
 	int selectedRange[2];
 
 	Gdiplus::RectF textBounds;
+
+	bool tickTimer = false;
+	std::thread* TimerThread;
 public:
 	WNDPROC OldWndProc;
 
@@ -26,6 +30,8 @@ public:
 	int GetCharacterWidth();
 
 	virtual void OnClick(WPARAM e, int x, int y) override;
+
+	void ThreadTimer();
 	
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
 };
