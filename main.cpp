@@ -14,22 +14,24 @@ LRESULT CALLBACK Hookproc(int code, WPARAM wParam, LPARAM lParam)
 {
     PKBDLLHOOKSTRUCT k = (PKBDLLHOOKSTRUCT)(lParam);
 
+    POINT p;
+    GetCursorPos(&p);
+
     if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN)
     {
-        POINT p;
+        
 
         RECT rect = { };
         GetWindowRect(*hwnd, &rect);
 
-        GetCursorPos(&p);
         if (p.x >= rect.right || p.x <= rect.left ||
             p.y >= rect.bottom || p.y <= rect.top) 
         {
             ShowWindow(*hwnd, SW_HIDE);
         }
-        
-        MainWindow->SendToClickListeners(wParam, p.x, p.y);
     }
+
+    MainWindow->SendToClickListeners(wParam, p.x, p.y);
 
     return CallNextHookEx(NULL, code, wParam, lParam);
 }
