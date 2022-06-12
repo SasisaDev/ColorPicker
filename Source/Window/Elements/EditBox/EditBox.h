@@ -24,6 +24,8 @@ public:
 	std::wstring GetText();
 
 	int GetCharacterWidth();
+
+	virtual void OnClick(WPARAM e, int x, int y) override;
 	
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
 };

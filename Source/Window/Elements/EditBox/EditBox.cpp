@@ -7,62 +7,6 @@ LRESULT CALLBACK ColEditBoxProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 {
     ColEditBox* pOwner = (ColEditBox*)(GetProp(hwnd, TEXT("ColOwner")));
 
-    POINT cur;
-    RECT win;
-    POINT WinCur;
-    POINT EditCur;
-
-    //TO-DO: These procedures are working only if click is INSIDE this element.
-    //       Setup global hook, to deselect elements from editbox.
-
-    switch (uMsg)
-    {
-    case WM_LBUTTONDOWN:
-        GetCursorPos(&cur);
-        
-        GetWindowRect(pOwner->GetOwner(), &win);
-
-        WinCur.x = cur.x - win.left;
-        WinCur.y = cur.y - win.top;
-
-        EditCur.x = WinCur.x - pOwner->GetRectOnCanvas().X;
-        EditCur.y = WinCur.y - pOwner->GetRectOnCanvas().Y;
-
-        if (EditCur.x >= 0 && EditCur.x <= pOwner->GetRectOnCanvas().Width
-            && EditCur.y >= 0 && EditCur.y <= pOwner->GetRectOnCanvas().Height)
-        {
-            pOwner->SelectPos1(EditCur.x/pOwner->GetCharacterWidth());
-        }
-        else
-        {
-            pOwner->SelectPos1(-1);
-        }
-        break;
-    case WM_LBUTTONUP:
-        GetCursorPos(&cur);
-
-        GetWindowRect(pOwner->GetOwner(), &win);
-
-        WinCur.x = cur.x - win.left;
-        WinCur.y = cur.y - win.top;
-
-        EditCur.x = WinCur.x - pOwner->GetRectOnCanvas().X;
-        EditCur.y = WinCur.y - pOwner->GetRectOnCanvas().Y;
-
-        if (EditCur.x >= 0 && EditCur.x <= pOwner->GetRectOnCanvas().Width
-            && EditCur.y >= 0 && EditCur.y <= pOwner->GetRectOnCanvas().Height)
-        {
-            pOwner->SelectPos2(EditCur.x / pOwner->GetCharacterWidth());
-            pOwner->Rerender();
-        }
-        else
-        {
-            pOwner->SelectPos2(-1);
-            pOwner->Rerender();
-        }
-        break;
-    }
-
     return CallWindowProc(pOwner->OldWndProc, hwnd, uMsg, wParam, lParam);
 }
 
@@ -118,6 +62,62 @@ std::wstring ColEditBox::GetText()
 int ColEditBox::GetCharacterWidth()
 {
     return textBounds.Width / text.size();
+}
+
+void ColEditBox::OnClick(WPARAM e, int x, int y)
+{
+    POINT cur;
+    RECT win;
+    POINT WinCur;
+    POINT EditCur;
+
+    switch (e)
+    {
+    case WM_LBUTTONDOWN:
+        GetCursorPos(&cur);
+
+        GetWindowRect(GetOwner(), &win);
+
+        WinCur.x = cur.x - win.left;
+        WinCur.y = cur.y - win.top;
+
+        EditCur.x = WinCur.x - GetRectOnCanvas().X;
+        EditCur.y = WinCur.y - GetRectOnCanvas().Y;
+
+        if (EditCur.x >= 0 && EditCur.x <= GetRectOnCanvas().Width
+            && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
+        {
+            SelectPos1(EditCur.x / GetCharacterWidth());
+        }
+        else
+        {
+            SelectPos1(-1);
+        }
+        break;
+    case WM_LBUTTONUP:
+        GetCursorPos(&cur);
+
+        GetWindowRect(GetOwner(), &win);
+
+        WinCur.x = cur.x - win.left;
+        WinCur.y = cur.y - win.top;
+
+        EditCur.x = WinCur.x - GetRectOnCanvas().X;
+        EditCur.y = WinCur.y - GetRectOnCanvas().Y;
+
+        if (EditCur.x >= 0 && EditCur.x <= GetRectOnCanvas().Width
+            && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
+        {
+            SelectPos2(EditCur.x / GetCharacterWidth());
+            Rerender();
+        }
+        else
+        {
+            SelectPos2(-1);
+            Rerender();
+        }
+        break;
+    }
 }
 
 int ColEditBox::Paint(HDC* hdc, Gdiplus::Graphics* graphics)

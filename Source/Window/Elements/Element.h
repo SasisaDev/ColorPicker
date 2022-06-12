@@ -20,7 +20,7 @@ public:
 	Gdiplus::Rect GetRectOnCanvas();
 	HWND GetOwner() const;
 
-	void OnClick(WPARAM e, int x, int y);
+	virtual void OnClick(WPARAM e, int x, int y);
 
 	void Rerender();
 
