@@ -143,21 +143,27 @@ void ColColorPicker::PickColor(int x, int y)
     // Pick color
     ColColorPicker::Background->GetPixel(x, y, &Color);
 
+    BYTE r = Color.GetRed();
+    BYTE g = Color.GetGreen();
+    BYTE b = Color.GetBlue();
+
     // Send to containers
     if (RGB)
     {
-        std::wstring rgb = L"" + (UINT8)Color.GetR();
-        rgb += L", " + (UINT8)Color.GetG();
-        rgb += L", " + (UINT8)Color.GetB();
-        RGB->SetText(rgb.c_str());
+        std::wstringstream rgb;
+        rgb << r;
+        rgb << L", " << static_cast<uint8_t>(g);
+        rgb << L", " << static_cast<uint8_t>(b);
+        RGB->SetText(rgb.str().c_str());
     }
 
     if (HEX)
     {
-        std::wstring hex = L"#" + hexStr(Color.GetR());
-        hex += hexStr(Color.GetG());
-        hex += hexStr(Color.GetB());
-        HEX->SetText(hex.c_str());
+        std::wstringstream hex;
+        hex << L"#" << hexStr(Color.GetR());
+        hex << hexStr(Color.GetG());
+        hex << hexStr(Color.GetB());
+        HEX->SetText(hex.str().c_str());
     }
 
     Rerender();
@@ -311,13 +317,21 @@ Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* 
 
 std::wstring hexStr(BYTE data)
 {
-    std::stringstream ss;
+    std::wstringstream ss;
     ss << std::hex;
     ss << (int)data;
-    
-    WCHAR* ret = new WCHAR[ss.str().size()];
 
-    MultiByteToWideChar(CP_ACP, 0, ss.str().c_str(), sizeof(ss.str().c_str()) * ss.str().size(), (LPWSTR)ret, ss.str().size());
+    if (ss.str().size() != 2)
+    {
+        std::wstringstream ret;
 
-    return ret;
+        for (int i = 0; i < 2 - ss.str().size(); i++)
+        {
+            ret << 0;
+        }
+        ret << ss.str();
+        return ret.str();
+    }
+
+    return ss.str();
 }

@@ -279,7 +279,7 @@ void Window::OnPaint(HWND hwnd)
 
     if (::UpdateLayeredWindow(hwnd, screenDC, &ptDst, &wndSize, memDC, &ptSrc, 0, &blendFunction, ULW_ALPHA) == 0)
     {
-        exit(-1);
+        //exit(-1);
     }
 
     hdc = BeginPaint(hwnd, &ps);
@@ -383,7 +383,21 @@ void Window::PopulateClientWithWindows(HWND hwnd)
     ColorPicker->Register(hI, hwnd, MarginLR, MarginTB, 275 * Scale, 275 * Scale);
     ColorPicker->SetColor(255, 255, 255);
     ColorPicker->SetHue(0);
+    ColorPicker->RGB = RGBEditBox;
+    ColorPicker->HEX = HEXEditBox;
     elements.push_back(ColorPicker);
+
+    // Sliders
+
+    ColSlider* HueSlider = new ColSlider();
+    HueSlider->Register(hI, hwnd, MarginLR, MarginTB + 275 * Scale + 6, 275 * Scale, 38 * Scale);
+    HueSlider->SetValue(0);
+    elements.push_back(HueSlider);
+
+    ColSlider* AlphaSlider = new ColSlider();
+    AlphaSlider->Register(hI, hwnd, MarginLR, MarginTB + 275 * Scale + 38 * Scale + 10, 275 * Scale, 38 * Scale);
+    AlphaSlider->SetValue(0);
+    elements.push_back(AlphaSlider);
 
     for (ColElement* element : elements)
     {

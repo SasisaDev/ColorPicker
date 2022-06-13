@@ -1,4 +1,7 @@
 #pragma once
+#ifndef _ELEMENT_H
+#define _ELEMENT_H
+
 #if defined(WIN32)
 #include <Windows.h>
 #include <gdiplus.h>
@@ -26,5 +29,7 @@ public:
 
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics);
 };
+
+#endif
 
 #endif

@@ -39,6 +39,9 @@
     <ClCompile Include="Source\Window\Elements\ColorPicker\ColorPicker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Window\Elements\Slider\Slider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\NotificationInterface\Notify.h">
@@ -68,6 +71,9 @@
     <ClInclude Include="Source\Window\Elements\ColorPicker\ColorPicker.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Window\Elements\Slider\Slider.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">
@@ -85,6 +91,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\..\..\Downloads\TextBox.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\..\Downloads\SliderHandle.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

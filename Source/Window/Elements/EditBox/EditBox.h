@@ -1,3 +1,5 @@
+#ifndef _EDIT_BOX_H
+#define _EDIT_BOX_H
 
 #if defined(WIN32)
 #include "../Element.h"
@@ -35,5 +37,7 @@ public:
 	
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
 };
+
+#endif
 
 #endif

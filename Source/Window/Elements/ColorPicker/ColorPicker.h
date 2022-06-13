@@ -1,3 +1,6 @@
+#pragma once
+#ifndef _COLOR_PICKER_H
+#define _COLOR_PICKER_H
 
 #if defined(WIN32)
 #include "../Element.h"
@@ -47,4 +50,5 @@ public:
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
 };
 
+#endif
 #endif

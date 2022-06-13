@@ -1,3 +1,5 @@
+#ifndef _TEXT_H
+#define _TEXT_H
 
 #if defined(WIN32)
 #include "../Element.h"
@@ -16,5 +18,7 @@ public:
 
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
 };
+
+#endif
 
 #endif

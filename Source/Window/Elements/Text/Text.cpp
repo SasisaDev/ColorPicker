@@ -1,4 +1,5 @@
 #include "Text.h"
+#include "..\Slider\Slider.h"
 
 #if defined(WIN32)
 int ColText::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, int cy)

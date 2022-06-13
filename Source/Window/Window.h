@@ -1,5 +1,8 @@
 #include "../NotificationInterface/Notify.h"
 
+#ifndef _WINDOW_H
+#define _WINDOW_H
+
 #if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
 #include <assert.h>
@@ -46,5 +49,7 @@ public:
 #elif defined(__APPLE__)
 
 #elif defined(__linux__)
+
+#endif
 
 #endif

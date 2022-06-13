@@ -66,6 +66,8 @@ IDB_BITMAP2             BITMAP                  "C:\\Users\\Valera\\Downloads\\A
 
 IDB_BITMAP3             BITMAP                  "C:\\Users\\Valera\\Downloads\\TextBox.bmp"
 
+IDB_BITMAP4             BITMAP                  "C:\\Users\\Valera\\Downloads\\SliderHandle.bmp"
+
 #endif    // Russian (Russia) resources
 /////////////////////////////////////////////////////////////////////////////
 

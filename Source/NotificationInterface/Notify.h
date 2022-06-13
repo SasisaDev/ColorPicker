@@ -1,3 +1,6 @@
+#ifndef _NOTIFY_H
+#define _NOTIFY_H
+
 #if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
 #include <shellapi.h>
@@ -23,5 +26,7 @@ public:
 #elif defined(__APPLE__)
 
 #elif defined(__linux__)
+
+#endif
 
 #endif
