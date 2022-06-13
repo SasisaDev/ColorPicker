@@ -59,6 +59,8 @@ int WINAPI WinMain(
 
     auto ret = MainWindow->LoopWindow();
     UnhookWindowsHookEx(GlobalClickHook);
+    delete MainWindow;
+    MainWindow = nullptr;
     return ret;
 }
 

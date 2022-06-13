@@ -40,6 +40,7 @@ int ColColorPicker::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int
 void ColColorPicker::SetHue(int hue)
 {
 	Hue = hue;
+    Rerender();
 }
 
 int ColColorPicker::GetHue()
@@ -49,11 +50,117 @@ int ColColorPicker::GetHue()
 
 void ColColorPicker::SetColor(int r, int g, int b)
 {
+    Color = Gdiplus::Color(r, g, b);
 }
 
 Gdiplus::Color ColColorPicker::GetColor()
 {
-	return Gdiplus::Color();
+	return Color;
+}
+
+void ColColorPicker::OnClick(WPARAM e, int x, int y)
+{
+    POINT cur;
+    RECT win;
+    POINT WinCur;
+    POINT EditCur;
+
+    GetCursorPos(&cur);
+
+    GetWindowRect(GetOwner(), &win);
+
+    WinCur.x = cur.x - win.left;
+    WinCur.y = cur.y - win.top;
+
+    EditCur.x = WinCur.x - GetRectOnCanvas().X;
+    EditCur.y = WinCur.y - GetRectOnCanvas().Y;
+
+    switch (e)
+    {
+    case WM_LBUTTONDOWN:
+        if (EditCur.x >= 0 && EditCur.x <= GetRectOnCanvas().Width
+            && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
+        {
+            TimerThread = new std::thread(&ColColorPicker::ThreadTimer, this);
+            tickTimer = true;
+        }
+        else
+        {
+            tickTimer = false;
+        }
+        break;
+    case WM_LBUTTONUP:
+        tickTimer = false;
+        break;
+    }
+}
+
+void ColColorPicker::ThreadTimer()
+{
+    using namespace std;
+    using namespace std::chrono;
+timer:
+    if (tickTimer)
+    {
+        POINT cur;
+        RECT win;
+        POINT WinCur;
+        POINT EditCur;
+
+        GetCursorPos(&cur);
+
+        GetWindowRect(GetOwner(), &win);
+
+        WinCur.x = cur.x - win.left;
+        WinCur.y = cur.y - win.top;
+
+        EditCur.x = WinCur.x - GetRectOnCanvas().X;
+        EditCur.y = WinCur.y - GetRectOnCanvas().Y;
+
+        if (EditCur.x >= 0 && EditCur.x <= GetRectOnCanvas().Width
+            && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
+        {
+            PickColor(EditCur.x, EditCur.y);
+        }
+        else
+        {
+            int _x, _y;
+
+            _x = (EditCur.x < 0) ? 0 : GetRectOnCanvas().Width;
+            _y = (EditCur.y < 0) ? 0 : GetRectOnCanvas().Height;
+
+            PickColor(_x, _y);
+            printf("%i, %i\n", _x, _y);
+        }
+
+        this_thread::sleep_for(33ms);
+        goto timer;
+    }
+}
+
+void ColColorPicker::PickColor(int x, int y)
+{
+    // Pick color
+    ColColorPicker::Background->GetPixel(x, y, &Color);
+
+    // Send to containers
+    if (RGB)
+    {
+        std::wstring rgb = L"" + (UINT8)Color.GetR();
+        rgb += L", " + (UINT8)Color.GetG();
+        rgb += L", " + (UINT8)Color.GetB();
+        RGB->SetText(rgb.c_str());
+    }
+
+    if (HEX)
+    {
+        std::wstring hex = L"#" + hexStr(Color.GetR());
+        hex += hexStr(Color.GetG());
+        hex += hexStr(Color.GetB());
+        HEX->SetText(hex.c_str());
+    }
+
+    Rerender();
 }
 
 int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
@@ -200,4 +307,17 @@ Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* 
     }
 
     return bitmap;
+}
+
+std::wstring hexStr(BYTE data)
+{
+    std::stringstream ss;
+    ss << std::hex;
+    ss << (int)data;
+    
+    WCHAR* ret = new WCHAR[ss.str().size()];
+
+    MultiByteToWideChar(CP_ACP, 0, ss.str().c_str(), sizeof(ss.str().c_str()) * ss.str().size(), (LPWSTR)ret, ss.str().size());
+
+    return ret;
 }

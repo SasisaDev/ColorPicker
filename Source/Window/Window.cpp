@@ -7,7 +7,6 @@ NotifyIcon* Icon;
 
 HBITMAP hArrowBmp, hBackgroundBmp;
 Gdiplus::Bitmap *ArrowBmp, *BackgroundBmp;
-HPALETTE Palette;
 PAINTSTRUCT ps;
 HDC hdc, hdcMem;
 HINSTANCE hI;
@@ -85,10 +84,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam)) {
             case 15667:
                 DeleteDC(hdcMem);
+                DeleteDC(hdc);
                 DeleteObject(hArrowBmp);
                 DeleteObject(hBackgroundBmp);
 
                 if (Icon) Icon->RemoveIcon();
+                Gdiplus::GdiplusShutdown(WinGDIToken);
                 exit(0);
                 break;
             case 15668:
