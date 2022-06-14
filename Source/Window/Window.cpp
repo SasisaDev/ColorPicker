@@ -208,6 +208,7 @@ int Window::LoopWindow()
     ZeroMemory(&msg, sizeof(MSG));
     while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
+        RefreshWindow();
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -391,7 +392,11 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColSlider* HueSlider = new ColSlider();
     HueSlider->Register(hI, hwnd, MarginLR, MarginTB + 275 * Scale + 6, 275 * Scale, 38 * Scale);
-    HueSlider->SetValue(0);
+    HueSlider->OnChange = [ColorPicker](int val) {
+        ColorPicker->SetHue(val);
+    };
+    HueSlider->SetValue(180);
+    HueSlider->SetMaxValue(360);
     elements.push_back(HueSlider);
 
     ColSlider* AlphaSlider = new ColSlider();

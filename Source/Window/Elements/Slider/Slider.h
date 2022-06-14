@@ -22,11 +22,14 @@ public:
 	void SetValue(int value);
 	int GetValue();
 
+	void SetMaxValue(int value);
+
 	virtual void OnClick(WPARAM e, int x, int y) override;
 
 	void ThreadTimer();
 
-	virtual void PaintInsides(Gdiplus::Rect, Gdiplus::Graphics* graphics);
+	std::function<int(Gdiplus::Rect, Gdiplus::Graphics*)> PaintInsidesProc;
+	std::function<void(int)> OnChange;
 
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
 };

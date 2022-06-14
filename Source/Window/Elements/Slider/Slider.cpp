@@ -44,11 +44,17 @@ int ColSlider::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, 
 void ColSlider::SetValue(int value)
 {
     Value = value;
+    if(OnChange) OnChange(value);
 }
 
 int ColSlider::GetValue()
 {
     return 0;
+}
+
+void ColSlider::SetMaxValue(int value)
+{
+    MaxValue = value;
 }
 
 void ColSlider::OnClick(WPARAM e, int x, int y)
@@ -59,17 +65,13 @@ void ColSlider::ThreadTimer()
 {
 }
 
-void ColSlider::PaintInsides(Gdiplus::Rect, Gdiplus::Graphics* graphics)
-{
-}
-
 int ColSlider::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 {
     graphics->FillRectangle(new Gdiplus::SolidBrush(Gdiplus::Color(254, 0, 0, 0)), GetRectOnCanvas());
 
     // 1 pixel padding 
     Gdiplus::Rect insides = { GetRectOnCanvas().X + 2, GetRectOnCanvas().Y + 1, GetRectOnCanvas().Width - 1, GetRectOnCanvas().Height - 1 };
-    PaintInsides(insides, graphics);
+    if(PaintInsidesProc) PaintInsidesProc(insides, graphics);
 
     // Draw selector
     Gdiplus::ImageAttributes imAtt;
@@ -89,5 +91,15 @@ int ColSlider::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
         return 0;
     }
 
+    return 1;
+}
+
+int ColSliderPaintInsidesHue(Gdiplus::Rect insides, Gdiplus::Graphics* graphics)
+{
+    return 1;
+}
+
+int ColSliderPaintInsidesAlpha(Gdiplus::Rect insides, Gdiplus::Graphics* graphics)
+{
     return 1;
 }

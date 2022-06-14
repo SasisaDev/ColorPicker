@@ -133,7 +133,7 @@ timer:
             printf("%i, %i\n", _x, _y);
         }
 
-        this_thread::sleep_for(33ms);
+        this_thread::sleep_for(10ms);
         goto timer;
     }
 }
@@ -199,7 +199,7 @@ int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 	
 	// Render to background
     // Make 2 gradients interpolation with multiply blending
-    pGr->DrawImage(MultiplyImagePtr(gradient1, gradient2), rect);
+    pGr->DrawImage(gradient2, rect);
 
 	// Render background to hdc
 	graphics->DrawImage(ColColorPicker::Background, GetRectOnCanvas());

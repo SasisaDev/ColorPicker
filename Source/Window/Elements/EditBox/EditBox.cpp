@@ -36,27 +36,31 @@ int ColEditBox::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx,
 
 void ColEditBox::SelectPos1(int x)
 {
-    if (x >= -1 || x < text.size())
+    if (x == -1 || (x >= -1 && x < text.size()))
     {
         selectedRange[0] = x;
     }
-    
-    if (x >= text.size())
+    else
     {
-        selectedRange[0] = text.size()-1;
+        if (x >= text.size())
+        {
+            selectedRange[0] = text.size() - 1;
+        }
     }
 }
 
 void ColEditBox::SelectPos2(int x)
 {
-    if (x >= -1 || x < text.size())
+    if (x == -1 || (x >= -1 && x < text.size()))
     {
         selectedRange[1] = x;
     }
-    
-    if (x >= text.size())
+    else
     {
-        selectedRange[1] = text.size() - 1;
+        if (x >= text.size())
+        {
+            selectedRange[1] = text.size() - 1;
+        }
     }
 }
 
@@ -172,7 +176,7 @@ timer:
             Rerender();
         }
 
-        this_thread::sleep_for(33ms);
+        this_thread::sleep_for(10ms);
         goto timer;
     }
 }
