@@ -173,6 +173,7 @@
   <ItemGroup>
     <Image Include="..\..\..\Downloads\Arrow.bmp" />
     <Image Include="..\..\..\Downloads\Body.bmp" />
+    <Image Include="..\..\..\Downloads\HueSlider.bmp" />
     <Image Include="..\..\..\Downloads\picker.ico" />
     <Image Include="..\..\..\Downloads\SliderHandle.bmp" />
     <Image Include="..\..\..\Downloads\TextBox.bmp" />

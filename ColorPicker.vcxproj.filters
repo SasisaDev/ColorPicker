@@ -96,6 +96,9 @@
     <Image Include="..\..\..\Downloads\SliderHandle.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\..\..\Downloads\HueSlider.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore">

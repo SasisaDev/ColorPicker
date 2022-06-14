@@ -208,7 +208,7 @@ int Window::LoopWindow()
     ZeroMemory(&msg, sizeof(MSG));
     while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
-        RefreshWindow();
+        //RefreshWindow();
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -392,15 +392,17 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColSlider* HueSlider = new ColSlider();
     HueSlider->Register(hI, hwnd, MarginLR, MarginTB + 275 * Scale + 6, 275 * Scale, 38 * Scale);
+    HueSlider->PaintInsidesProc = std::function(ColSliderPaintInsidesHue);
     HueSlider->OnChange = [ColorPicker](int val) {
         ColorPicker->SetHue(val);
     };
-    HueSlider->SetValue(180);
+    HueSlider->SetValue(240);
     HueSlider->SetMaxValue(360);
     elements.push_back(HueSlider);
 
     ColSlider* AlphaSlider = new ColSlider();
     AlphaSlider->Register(hI, hwnd, MarginLR, MarginTB + 275 * Scale + 38 * Scale + 10, 275 * Scale, 38 * Scale);
+    HueSlider->PaintInsidesProc = ColSliderPaintInsidesAlpha;
     AlphaSlider->SetValue(0);
     elements.push_back(AlphaSlider);
 

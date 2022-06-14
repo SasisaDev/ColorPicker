@@ -4,6 +4,9 @@
 
 bool ColSlider::ClassRegistered = false;
 
+Gdiplus::Bitmap* HueInsides = nullptr;
+Gdiplus::Bitmap* AlphaInsides = nullptr;
+
 LRESULT CALLBACK ColSliderProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
@@ -44,7 +47,10 @@ int ColSlider::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, 
 void ColSlider::SetValue(int value)
 {
     Value = value;
-    if(OnChange) OnChange(value);
+    if (OnChange)
+        OnChange(value);
+    else
+        Rerender();
 }
 
 int ColSlider::GetValue()
@@ -70,8 +76,9 @@ int ColSlider::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
     graphics->FillRectangle(new Gdiplus::SolidBrush(Gdiplus::Color(254, 0, 0, 0)), GetRectOnCanvas());
 
     // 1 pixel padding 
-    Gdiplus::Rect insides = { GetRectOnCanvas().X + 2, GetRectOnCanvas().Y + 1, GetRectOnCanvas().Width - 1, GetRectOnCanvas().Height - 1 };
+    Gdiplus::Rect insides = { GetRectOnCanvas().X + 1, GetRectOnCanvas().Y + 1, GetRectOnCanvas().Width - 2, GetRectOnCanvas().Height - 2 };
     if(PaintInsidesProc) PaintInsidesProc(insides, graphics);
+    ColSliderPaintInsidesHue(insides, graphics);
 
     // Draw selector
     Gdiplus::ImageAttributes imAtt;
@@ -79,23 +86,35 @@ int ColSlider::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
         Gdiplus::ColorAdjustTypeBitmap);
 
     int HeightFactor = (GetRectOnCanvas().Height + 3);
+    int HandleX = (int)(((float)Value / (float)MaxValue) * (float)GetRectOnCanvas().Width);
     Gdiplus::Rect HandlePosition = {};
-    HandlePosition.X = ((Value / MaxValue) * GetRectOnCanvas().Width) - HeightFactor/2 + GetRectOnCanvas().X;
+    HandlePosition.X = HandleX + GetRectOnCanvas().X - HeightFactor / 2;
+    HandlePosition.X += HeightFactor/2 - 3;
     HandlePosition.Y = GetRectOnCanvas().Y - (HeightFactor/6)+2;
     HandlePosition.Width = HandlePosition.Height = HeightFactor;
+    HandlePosition.Width /= 3;
 
-    auto res = graphics->DrawImage(HandleBitmap, HandlePosition, 0, 0, HandleBitmap->GetWidth(),
+    graphics->FillRectangle(new Gdiplus::SolidBrush(Gdiplus::Color(200, 120, 120, 120)), HandlePosition);
+
+    /*auto res = graphics->DrawImage(HandleBitmap, HandlePosition, 0, 0, HandleBitmap->GetWidth(),
         HandleBitmap->GetHeight(), Gdiplus::Unit::UnitPixel, &imAtt);
     if (res != Gdiplus::Status::Ok)
     {
         return 0;
-    }
+    }*/
 
     return 1;
 }
 
 int ColSliderPaintInsidesHue(Gdiplus::Rect insides, Gdiplus::Graphics* graphics)
 {
+    if (HueInsides == nullptr)
+    {
+        HueInsides = Gdiplus::Bitmap::FromHBITMAP(reinterpret_cast<HBITMAP>(LoadImage(GetModuleHandle(NULL),
+            MAKEINTRESOURCE(IDB_BITMAP5), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)), NULL);
+    }
+
+    graphics->DrawImage(HueInsides, insides);
     return 1;
 }
 

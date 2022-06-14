@@ -6,6 +6,9 @@
 #include <string>
 #define EL_SLIDER L"colpik_slider"
 
+int ColSliderPaintInsidesHue(Gdiplus::Rect insides, Gdiplus::Graphics* graphics);
+int ColSliderPaintInsidesAlpha(Gdiplus::Rect insides, Gdiplus::Graphics* graphics);
+
 class ColSlider : public ColElement
 {
 protected:
