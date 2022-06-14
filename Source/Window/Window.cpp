@@ -427,14 +427,22 @@ void Window::PopulateClientWithWindows(HWND hwnd)
     HueSlider->OnChange = [ColorPicker](int val) {
         ColorPicker->SetHue(val);
     };
-    HueSlider->SetValue(240);
+    HueSlider->SetValue(0);
     HueSlider->SetMaxValue(360);
     elements.push_back(HueSlider);
 
     ColSlider* AlphaSlider = new ColSlider();
     AlphaSlider->Register(hI, hwnd, MarginLR, MarginTB + 275 * Scale + 38 * Scale + 10, 275 * Scale, 38 * Scale);
+    AlphaSlider->SetMaxValue(255);
+    AlphaSlider->SetValue(255);
     AlphaSlider->isAlpha = true;
     //HueSlider->PaintInsidesProc = ColSliderPaintInsidesAlpha;
+    AlphaSlider->OnChange = [Alpha10EditBox, Alpha16EditBox](int val) {
+        std::wstringstream ss1;
+        ss1 << val;
+        Alpha10EditBox->SetText(ss1.str().c_str());
+        Alpha16EditBox->SetText(hexStr((BYTE)val).c_str());
+    };
     AlphaSlider->SetValue(0);
     elements.push_back(AlphaSlider);
 

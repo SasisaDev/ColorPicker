@@ -49,8 +49,6 @@ void ColSlider::SetValue(int value)
     Value = value;
     if (OnChange)
         OnChange(value);
-    else
-        Rerender();
 }
 
 int ColSlider::GetValue()
