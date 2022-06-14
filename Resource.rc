@@ -70,6 +70,8 @@ IDB_BITMAP4             BITMAP                  "C:\\Users\\Valera\\Downloads\\S
 
 IDB_BITMAP5             BITMAP                  "C:\\Users\\Valera\\Downloads\\HueSlider.bmp"
 
+IDB_BITMAP6             BITMAP                  "C:\\Users\\Valera\\Downloads\\AlphaSlider.bmp"
+
 #endif    // Russian (Russia) resources
 /////////////////////////////////////////////////////////////////////////////
 

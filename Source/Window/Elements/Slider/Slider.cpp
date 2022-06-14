@@ -77,8 +77,14 @@ int ColSlider::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 
     // 1 pixel padding 
     Gdiplus::Rect insides = { GetRectOnCanvas().X + 1, GetRectOnCanvas().Y + 1, GetRectOnCanvas().Width - 2, GetRectOnCanvas().Height - 2 };
-    if(PaintInsidesProc) PaintInsidesProc(insides, graphics);
-    ColSliderPaintInsidesHue(insides, graphics);
+    if (!isAlpha)
+    {
+        ColSliderPaintInsidesHue(insides, graphics);
+    }
+    else
+    {
+        ColSliderPaintInsidesAlpha(insides, graphics);
+    }
 
     // Draw selector
     Gdiplus::ImageAttributes imAtt;
@@ -120,5 +126,12 @@ int ColSliderPaintInsidesHue(Gdiplus::Rect insides, Gdiplus::Graphics* graphics)
 
 int ColSliderPaintInsidesAlpha(Gdiplus::Rect insides, Gdiplus::Graphics* graphics)
 {
+    if (AlphaInsides == nullptr)
+    {
+        AlphaInsides = Gdiplus::Bitmap::FromHBITMAP(reinterpret_cast<HBITMAP>(LoadImage(GetModuleHandle(NULL),
+            MAKEINTRESOURCE(IDB_BITMAP6), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)), NULL);
+    }
+
+    graphics->DrawImage(AlphaInsides, insides);
     return 1;
 }

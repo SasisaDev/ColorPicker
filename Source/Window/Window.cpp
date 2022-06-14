@@ -206,8 +206,20 @@ int Window::LoopWindow()
 {
     MSG msg = {};
     ZeroMemory(&msg, sizeof(MSG));
+    auto curTime = std::chrono::high_resolution_clock::now();
+    auto lastTime = std::chrono::high_resolution_clock::now();
+    double deltaTime = 0;
     while (GetMessage(&msg, NULL, 0, 0) > 0)
     {
+        curTime = std::chrono::high_resolution_clock::now();
+        deltaTime = std::chrono::duration<double, std::milli>(curTime-lastTime).count();
+
+        if (deltaTime >= 1000 / 60)
+        {
+            if(IsWindowVisible(hWnd))
+                RefreshWindow();
+            lastTime = curTime;
+        }
         //RefreshWindow();
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -236,12 +248,33 @@ void Window::OnPaint(HWND hwnd)
     ::GetWindowRect(hwnd, &wndRect);
     SIZE wndSize = { wndRect.right - wndRect.left,wndRect.bottom - wndRect.top };
     HDC hdc = ::GetDC(hwnd);
+    if (!hdc)
+    {
+        // Logger
+        exit(-1);
+    }
+
     HDC memDC = ::CreateCompatibleDC(hdc);
+    if (!memDC)
+    {
+        // Logger
+        exit(-1);
+    }
     HBITMAP memBitmap = ::CreateCompatibleBitmap(hdc, wndSize.cx, wndSize.cy);
+    if (!memBitmap)
+    {
+        // Logger
+        exit(-1);
+    }
     ::SelectObject(memDC, memBitmap);
-    ::SetBkMode(memDC, TRANSPARENT);
 
     Gdiplus::Graphics graphics(memDC);
+
+    if (graphics.GetLastStatus() != Gdiplus::Status::Ok)
+    {
+        // Logger
+        exit(-1);
+    }
 
     graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
 
@@ -283,12 +316,10 @@ void Window::OnPaint(HWND hwnd)
         //exit(-1);
     }
 
-    hdc = BeginPaint(hwnd, &ps);
-
-    EndPaint(hwnd, &ps);
-
     ::DeleteDC(memDC);
     ::DeleteObject(memBitmap);
+    ::ReleaseDC(hwnd, hdc);
+    ::ReleaseDC(hwnd, screenDC);
 }
 
 void AlignWindowToNotify(HWND _hwnd)
@@ -392,7 +423,7 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColSlider* HueSlider = new ColSlider();
     HueSlider->Register(hI, hwnd, MarginLR, MarginTB + 275 * Scale + 6, 275 * Scale, 38 * Scale);
-    HueSlider->PaintInsidesProc = std::function(ColSliderPaintInsidesHue);
+    //HueSlider->PaintInsidesProc = ColSliderPaintInsidesHue;
     HueSlider->OnChange = [ColorPicker](int val) {
         ColorPicker->SetHue(val);
     };
@@ -402,12 +433,13 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColSlider* AlphaSlider = new ColSlider();
     AlphaSlider->Register(hI, hwnd, MarginLR, MarginTB + 275 * Scale + 38 * Scale + 10, 275 * Scale, 38 * Scale);
-    HueSlider->PaintInsidesProc = ColSliderPaintInsidesAlpha;
+    AlphaSlider->isAlpha = true;
+    //HueSlider->PaintInsidesProc = ColSliderPaintInsidesAlpha;
     AlphaSlider->SetValue(0);
     elements.push_back(AlphaSlider);
 
-    for (ColElement* element : elements)
-    {
-        element->SetRepaintCallback(std::bind(&Window::RefreshWindow, this));
-    }
+    //for (ColElement* element : elements)
+    //{
+    //    element->SetRepaintCallback(std::bind(&Window::RefreshWindow, this));
+    //}
 }

@@ -5,27 +5,22 @@
 #include <Windows.h>
 #include "resource.h"
 
-#define IDI_PICKERLOGO "picker.ico"
-
-HWND* hwnd;
 Window* MainWindow = nullptr;
 
 LRESULT CALLBACK Hookproc(int code, WPARAM wParam, LPARAM lParam)
 {
-    PKBDLLHOOKSTRUCT k = (PKBDLLHOOKSTRUCT)(lParam);
-
     POINT p;
     GetCursorPos(&p);
 
     if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN)
     {
         RECT rect = { };
-        GetWindowRect(*hwnd, &rect);
+        GetWindowRect(*MainWindow->GetHWND(), &rect);
 
         if (p.x >= rect.right || p.x <= rect.left ||
             p.y >= rect.bottom || p.y <= rect.top) 
         {
-            ShowWindow(*hwnd, SW_HIDE);
+            ShowWindow(*MainWindow->GetHWND(), SW_HIDE);
         }
     }
 
@@ -52,7 +47,6 @@ int WINAPI WinMain(
 
     MainWindow = new Window(hIcon, hInstance, CLASS_NAME);
     MainWindow->StartWindow();
-    hwnd = MainWindow->GetHWND();
 
     HHOOK GlobalClickHook;
     GlobalClickHook = SetWindowsHookEx(WH_MOUSE_LL, Hookproc, hInstance, 0);

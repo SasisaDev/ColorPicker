@@ -31,7 +31,8 @@ public:
 
 	void ThreadTimer();
 
-	std::function<int(Gdiplus::Rect, Gdiplus::Graphics*)> PaintInsidesProc;
+	//std::function<int(Gdiplus::Rect, Gdiplus::Graphics*)> PaintInsidesProc;
+	bool isAlpha = false;
 	std::function<void(int)> OnChange;
 
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
