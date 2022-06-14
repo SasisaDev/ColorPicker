@@ -16,6 +16,8 @@ protected:
 
 	Gdiplus::RectF textBounds;
 
+	static HFONT hFont;
+
 	bool tickTimer = false;
 	std::thread* TimerThread;
 public:

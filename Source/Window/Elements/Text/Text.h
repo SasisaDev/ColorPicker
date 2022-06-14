@@ -10,6 +10,8 @@ class ColText : public ColElement
 {
 protected:
 	std::wstring text;
+
+	static HFONT hFont;
 public:
 
 	virtual int Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, int cy) override;

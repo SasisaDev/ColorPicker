@@ -3,6 +3,8 @@
 
 #if defined(WIN32)
 
+HFONT ColEditBox::hFont = 0;
+
 LRESULT CALLBACK ColEditBoxProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     ColEditBox* pOwner = (ColEditBox*)(GetProp(hwnd, TEXT("ColOwner")));
@@ -29,6 +31,13 @@ int ColEditBox::Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx,
     if (!Background)
     {
         return false;
+    }
+
+    if (ColEditBox::hFont == 0)
+    {
+        ColEditBox::hFont = CreateFont(14, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+            VARIABLE_PITCH, L"Segoe UI");
     }
 
     return true;
@@ -194,11 +203,7 @@ int ColEditBox::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
         return 0;
     }
 
-    HFONT hFont = CreateFont(14, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-        VARIABLE_PITCH, L"Segoe UI");
-
-    Gdiplus::Font Font(*hdc, hFont);
+    Gdiplus::Font Font(*hdc, ColEditBox::hFont);
 
     SendMessage(handle, WM_SETFONT, (WPARAM)hFont, TRUE);
 

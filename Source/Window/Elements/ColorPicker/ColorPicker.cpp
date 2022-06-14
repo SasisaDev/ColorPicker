@@ -171,6 +171,7 @@ void ColColorPicker::PickColor(int x, int y)
 
 int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 {
+    delete ColColorPicker::Background;
     ColColorPicker::Background = new Gdiplus::Bitmap(GetRectOnCanvas().Width, GetRectOnCanvas().Height,
 		PixelFormat24bppRGB);
 	Gdiplus::Graphics* pGr = Gdiplus::Graphics::FromImage(ColColorPicker::Background);
@@ -204,7 +205,12 @@ int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 	// Render background to hdc
 	graphics->DrawImage(ColColorPicker::Background, GetRectOnCanvas());
 
-    
+    delete pGr;
+    delete pGr1;
+    delete pGr2;
+    delete gradient1;
+    delete gradient2;
+
 	return 1;
 }
 
