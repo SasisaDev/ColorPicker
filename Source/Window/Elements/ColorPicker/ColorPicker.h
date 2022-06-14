@@ -23,6 +23,8 @@ protected:
 	static Gdiplus::Bitmap* Background;
 	Gdiplus::Color Color;
 	int Hue;
+
+	POINT Selection;
 	
 	static bool ClassRegistered;
 
@@ -45,7 +47,7 @@ public:
 
 	void ThreadTimer();
 
-	void PickColor(int x, int y);
+	void PickColor();
 
 	virtual int Paint(HDC* hdc, Gdiplus::Graphics* graphics) override;
 };

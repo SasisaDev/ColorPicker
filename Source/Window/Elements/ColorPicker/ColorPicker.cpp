@@ -120,7 +120,7 @@ timer:
         if (EditCur.x >= 0 && EditCur.x <= GetRectOnCanvas().Width
             && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
         {
-            PickColor(EditCur.x, EditCur.y);
+            Selection = { EditCur.x, EditCur.y };
         }
         else
         {
@@ -129,7 +129,7 @@ timer:
             _x = (EditCur.x < 0) ? 0 : GetRectOnCanvas().Width;
             _y = (EditCur.y < 0) ? 0 : GetRectOnCanvas().Height;
 
-            PickColor(_x, _y);
+            Selection = { _x, _y };
             printf("%i, %i\n", _x, _y);
         }
 
@@ -138,9 +138,11 @@ timer:
     }
 }
 
-void ColColorPicker::PickColor(int x, int y)
+void ColColorPicker::PickColor()
 {
     // Pick color
+    int x = Selection.x;
+    int y = Selection.y;
     ColColorPicker::Background->GetPixel(x, y, &Color);
 
     BYTE r = Color.GetRed();
@@ -205,6 +207,8 @@ int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 	// Render background to hdc
 	graphics->DrawImage(ColColorPicker::Background, GetRectOnCanvas());
 
+    PickColor();
+
     delete pGr;
     delete pGr1;
     delete pGr2;
@@ -253,18 +257,8 @@ Gdiplus::Color HSVtoRGB(float H, float S, float V)
 
 Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* SrcBitmap2)
 {
-    int width;
-    int height;
-
-    if (SrcBitmap1->GetWidth() < SrcBitmap2->GetWidth())
-        width = SrcBitmap1->GetWidth();
-    else
-        width = SrcBitmap2->GetWidth();
-
-    if (SrcBitmap1->GetHeight() < SrcBitmap2->GetHeight())
-        height = SrcBitmap1->GetHeight();
-    else
-        height = SrcBitmap2->GetHeight();
+    int width = SrcBitmap1->GetWidth();
+    int height = SrcBitmap1->GetHeight();
 
     Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(width, height);
     int clr1, clr2;
