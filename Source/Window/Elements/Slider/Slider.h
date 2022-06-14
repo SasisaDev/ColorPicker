@@ -4,6 +4,7 @@
 #if defined(WIN32)
 #include "../Element.h"
 #include <string>
+#include <thread>
 #define EL_SLIDER L"colpik_slider"
 
 int ColSliderPaintInsidesHue(Gdiplus::Rect insides, Gdiplus::Graphics* graphics);
@@ -16,6 +17,9 @@ protected:
 	int MaxValue = 100;
 
 	Gdiplus::Bitmap *HandleBitmap;
+
+	bool tickTimer = false;
+	std::thread* TimerThread;
 
 	static bool ClassRegistered;
 public:

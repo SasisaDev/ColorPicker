@@ -65,10 +65,81 @@ void ColSlider::SetMaxValue(int value)
 
 void ColSlider::OnClick(WPARAM e, int x, int y)
 {
+    POINT cur;
+    RECT win;
+    POINT WinCur;
+    POINT EditCur;
+
+    GetCursorPos(&cur);
+
+    GetWindowRect(GetOwner(), &win);
+
+    WinCur.x = cur.x - win.left;
+    WinCur.y = cur.y - win.top;
+
+    EditCur.x = WinCur.x - GetRectOnCanvas().X;
+    EditCur.y = WinCur.y - GetRectOnCanvas().Y;
+
+    switch (e)
+    {
+    case WM_LBUTTONDOWN:
+        if (EditCur.x >= 0 && EditCur.x <= GetRectOnCanvas().Width
+            && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
+        {
+            TimerThread = new std::thread(&ColSlider::ThreadTimer, this);
+            tickTimer = true;
+        }
+        else
+        {
+            tickTimer = false;
+        }
+        break;
+    case WM_LBUTTONUP:
+        tickTimer = false;
+        break;
+    }
 }
 
 void ColSlider::ThreadTimer()
 {
+    using namespace std;
+    using namespace std::chrono;
+timer:
+    if (tickTimer)
+    {
+        POINT cur;
+        RECT win;
+        POINT WinCur;
+        POINT EditCur;
+
+        GetCursorPos(&cur);
+
+        GetWindowRect(GetOwner(), &win);
+
+        WinCur.x = cur.x - win.left;
+        WinCur.y = cur.y - win.top;
+
+        EditCur.x = WinCur.x - GetRectOnCanvas().X;
+        EditCur.y = WinCur.y - GetRectOnCanvas().Y;
+
+        if (EditCur.x >= 0 && EditCur.x <= GetRectOnCanvas().Width
+            && EditCur.y >= 0 && EditCur.y <= GetRectOnCanvas().Height)
+        {
+            int res = (int)((float)((float)EditCur.x / (float)GetRectOnCanvas().Width) * MaxValue);
+            SetValue(res);
+        }
+        else
+        {
+            int _x;
+
+            _x = (EditCur.x < 0) ? 0 : MaxValue;
+
+            SetValue(_x);
+        }
+
+        this_thread::sleep_for(10ms);
+        goto timer;
+    }
 }
 
 int ColSlider::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
