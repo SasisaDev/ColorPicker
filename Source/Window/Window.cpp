@@ -68,7 +68,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (hMenu) {
                 InsertMenu(hMenu, -1, MF_BYPOSITION, 15668, L"About");
                 InsertMenu(hMenu, -1, MF_BYPOSITION | MFS_CHECKED, 15669, L"Autorun");
-                InsertMenu(hMenu, -1, MF_BYPOSITION, 15667, L"Exit");
+                InsertMenu(hMenu, -1, MF_BYPOSITION, 15667, L"Exit");   
 
                 POINT pt;
                 GetCursorPos(&pt);
@@ -378,7 +378,7 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColEditBox* CMYKEditBox = new ColEditBox();
     CMYKEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 3 + InterEditboxMargin * 2, 72, 18);
-    CMYKEditBox->SetText(L"100, 100, 100, 100");
+    CMYKEditBox->SetText(L"Unavailable");
     elements.push_back(CMYKEditBox);
 
     ColText* CMYKText = new ColText();
@@ -388,6 +388,7 @@ void Window::PopulateClientWithWindows(HWND hwnd)
 
     ColEditBox* PMSEditBox = new ColEditBox();
     PMSEditBox->Register(hI, hwnd, (700 * Scale) - MarginLR - 72, MarginTB * 4 + InterEditboxMargin * 3, 72, 18);
+    PMSEditBox->SetText(L"Unavailable");
     elements.push_back(PMSEditBox);
 
     ColText* PMSText = new ColText();
