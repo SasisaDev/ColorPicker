@@ -443,7 +443,7 @@ void Window::PopulateClientWithWindows(HWND hwnd)
         Alpha10EditBox->SetText(ss1.str().c_str());
         Alpha16EditBox->SetText(hexStr((BYTE)val).c_str());
     };
-    AlphaSlider->SetValue(0);
+    ColorPicker->Alpha = AlphaSlider;
     elements.push_back(AlphaSlider);
 
     //for (ColElement* element : elements)

@@ -130,7 +130,6 @@ timer:
             _y = (EditCur.y < 0) ? 0 : GetRectOnCanvas().Height;
 
             Selection = { _x, _y };
-            printf("%i, %i\n", _x, _y);
         }
 
         this_thread::sleep_for(10ms);
@@ -156,7 +155,11 @@ void ColColorPicker::PickColor()
         rgb << r;
         rgb << L", " << static_cast<uint8_t>(g);
         rgb << L", " << static_cast<uint8_t>(b);
-        RGB->SetText(rgb.str().c_str());
+        // Simplest possible memoisation
+        if (RGB->GetText() != rgb.str())
+        {
+            RGB->SetText(rgb.str().c_str());
+        }
     }
 
     if (HEX)
@@ -165,7 +168,18 @@ void ColColorPicker::PickColor()
         hex << L"#" << hexStr(Color.GetR());
         hex << hexStr(Color.GetG());
         hex << hexStr(Color.GetB());
-        HEX->SetText(hex.str().c_str());
+        if (Alpha)
+        {
+            if (Alpha->GetValue() != 255)
+            {
+                hex << hexStr((BYTE)Alpha->GetValue());
+            }
+        }
+        // Simplest possible memoisation
+        if (HEX->GetText() != hex.str())
+        {
+            HEX->SetText(hex.str().c_str());
+        }
     }
 
     Rerender();
@@ -202,7 +216,7 @@ int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 	
 	// Render to background
     // Make 2 gradients interpolation with multiply blending
-    pGr->DrawImage(gradient2, rect);
+    pGr->DrawImage(MultiplyImagePtr(gradient1, gradient2), rect);
 
 	// Render background to hdc
 	graphics->DrawImage(ColColorPicker::Background, GetRectOnCanvas());
@@ -261,7 +275,7 @@ Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* 
     int height = SrcBitmap1->GetHeight();
 
     Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(width, height);
-    int clr1, clr2;
+    byte clr1, clr2;
 
     try
     {
@@ -282,22 +296,14 @@ Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* 
 
             for (int row = 0; row < bitmap->GetWidth() - 1; row++)
             {
-                clr1 = (Src1Ptr[row * xOffset] + Src1Ptr[row * xOffset + 1] + Src1Ptr[row * xOffset + 2]) / 3;
-                clr2 = (Src2Ptr[row * xOffset] + Src2Ptr[row * xOffset + 1] + Src2Ptr[row * xOffset + 2]) / 3;
-
-                clr1 *= clr2;
-
-                if (clr1 == 0)
+                for (int byt = 0; byt < 3; byt++)
                 {
-                    DestPtr[row * xOffset] = (byte)(0);
-                    DestPtr[row * xOffset + 1] = (byte)(0);
-                    DestPtr[row * xOffset + 2] = (byte)(0);
-                }
-                else
-                {
-                    DestPtr[row * xOffset] = (byte)(Src2Ptr[row * xOffset]);
-                    DestPtr[row * xOffset + 1] = (byte)(Src2Ptr[row * xOffset + 1]);
-                    DestPtr[row * xOffset + 2] = (byte)(Src2Ptr[row * xOffset + 2]);
+                    clr1 = (Src1Ptr[row * xOffset + byt]);
+                    clr2 = (Src2Ptr[row * xOffset + byt]);
+
+                    int res = (int)((float)((float)clr1/255.f)*((float)clr2/255.f)*255.f);
+
+                    DestPtr[row * xOffset + byt] = (byte)(res);
                 }
             }
         }

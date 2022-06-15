@@ -53,7 +53,7 @@ void ColSlider::SetValue(int value)
 
 int ColSlider::GetValue()
 {
-    return 0;
+    return Value;
 }
 
 void ColSlider::SetMaxValue(int value)

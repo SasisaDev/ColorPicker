@@ -5,6 +5,7 @@
 #if defined(WIN32)
 #include "../Element.h"
 #include "../EditBox/EditBox.h"
+#include "../Slider/Slider.h"
 #include <sstream>
 #include <iomanip>
 #include <codecvt>
@@ -35,6 +36,8 @@ public:
 	ColEditBox* HEX;
 	ColEditBox* CMYK;
 	ColEditBox* PMS;
+
+	ColSlider* Alpha;
 
 	virtual int Register(HINSTANCE hInstance, HWND hOwner, int x, int y, int cx, int cy) override;
 
