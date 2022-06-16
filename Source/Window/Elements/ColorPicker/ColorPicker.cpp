@@ -126,8 +126,9 @@ timer:
         {
             int _x, _y;
 
-            _x = (EditCur.x < 0) ? 0 : GetRectOnCanvas().Width;
-            _y = (EditCur.y < 0) ? 0 : GetRectOnCanvas().Height;
+            _x = (EditCur.x < 0) ? 0 : 
+                (EditCur.x > GetRectOnCanvas().Width) ? GetRectOnCanvas().Width : EditCur.x;
+            _y = (EditCur.y < 0) ? 0 : (EditCur.y > GetRectOnCanvas().Height) ? GetRectOnCanvas().Height : EditCur.y;
 
             Selection = { _x, _y };
         }
