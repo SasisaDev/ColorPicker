@@ -13,6 +13,8 @@ HINSTANCE hI;
 
 HMENU hMenu;
 
+bool bAutoruns = false;
+
 //GDI+
 ULONG_PTR WinGDIToken;
 
@@ -21,11 +23,25 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     static BITMAPINFOHEADER* pbmi = NULL;
     static BYTE* pBuffer = NULL;
 
+    unsigned char* path = nullptr;
+    LPDWORD length = nullptr;
+
     switch (uMsg)
     {
     case WM_CREATE:
         // Gather HINSTANCE
         hI = reinterpret_cast<HINSTANCE>(GetWindowLong(hwnd, GWL_HINSTANCE));
+
+        HKEY subKey;
+        if (RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_READ, &subKey) == ERROR_SUCCESS)
+        {
+            if (RegQueryValueEx(subKey, L"VskamiColorPicker", NULL, NULL, (unsigned char*)path, length) == ERROR_SUCCESS)
+            {
+                bAutoruns = true;
+            }
+        }
+
+        RegCloseKey(subKey);
 
         // Gather resources' handles
         hArrowBmp = reinterpret_cast<HBITMAP>(::LoadImage(hI, MAKEINTRESOURCE(IDB_BITMAP2), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
@@ -67,8 +83,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             if (hMenu) {
                 InsertMenu(hMenu, -1, MF_BYPOSITION, 15668, L"About");
-                InsertMenu(hMenu, -1, MF_BYPOSITION | MFS_CHECKED, 15669, L"Autorun");
+                InsertMenu(hMenu, -1, MF_BYPOSITION, 15669, L"Autorun");
                 InsertMenu(hMenu, -1, MF_BYPOSITION, 15667, L"Exit");   
+
+                CheckMenuItem(hMenu, 15669, (bAutoruns == true) ? MFS_CHECKED : MFS_UNCHECKED);
 
                 POINT pt;
                 GetCursorPos(&pt);
@@ -96,24 +114,39 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 MessageBox(hwnd, L"Created and managed by Sasisa\nGithub: SasisaDev/ColorPicker", L"About", MB_OK | MB_ICONINFORMATION);
                 break;
             case 15669:
-                MENUITEMINFO menuItem = { 0 };
-                menuItem.cbSize = sizeof(MENUITEMINFO);
-                menuItem.fMask = MIIM_STATE;
-                GetMenuItemInfo(hMenu, 15669, FALSE, &menuItem);
-                
-                if (menuItem.fState == MFS_UNCHECKED)
+                if (bAutoruns)
                 {
-                    // Setup Autorun
+                    // Remove Autorun
                     // ...
-                    menuItem.fState == MFS_CHECKED;
+                    HKEY hkey = nullptr;
+                    auto lResult = RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_ALL_ACCESS, &hkey);
+
+                    if (lResult == ERROR_SUCCESS && hkey != nullptr)
+                    {
+                        LPCWSTR Value;
+
+                        auto result = RegDeleteValue(hkey, L"VskamiColorPicker");
+                        if (result == ERROR_SUCCESS)
+                        {
+                            bAutoruns = false;
+                        }
+                    }
+
+                    RegCloseKey(hkey);
                 }
                 else
                 {
-                    // De Autorun
+                    // Set Autorun
                     // ...
-                    menuItem.fState == MFS_CHECKED;
+                    LPTSTR lpFilename = new TCHAR[MAX_PATH];
+                    GetModuleFileName(hI, lpFilename, MAX_PATH);
+                    
+                    HKEY hkey = NULL;
+                    RegCreateKey(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", &hkey);
+                    RegSetValueEx(hkey, L"VskamiColorPicker", 0, REG_SZ, (BYTE*)lpFilename, (wcslen(lpFilename) + 1) * 2);
+                    bAutoruns = true;
+                    RegCloseKey(hkey);
                 }
-                SetMenuItemInfo(hMenu, 15669, FALSE, &menuItem);
                 break;
         }
     }
