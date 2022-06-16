@@ -223,6 +223,10 @@ int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
 
     PickColor();
 
+    Gdiplus::Pen Pen(new Gdiplus::SolidBrush(GetInvertedBW(Color)), 1);
+    Gdiplus::Rect selRect = {Selection.x + 11, Selection.y + 10, 8, 8};
+    graphics->DrawEllipse(&Pen, selRect);
+
     delete pGr;
     delete pGr1;
     delete pGr2;
@@ -230,6 +234,21 @@ int ColColorPicker::Paint(HDC* hdc, Gdiplus::Graphics* graphics)
     delete gradient2;
 
 	return 1;
+}
+
+Gdiplus::Color GetInvertedBW(Gdiplus::Color Color)
+{
+    Gdiplus::Color ret;
+
+    ret = Gdiplus::Color(255, 255, 255).GetValue() - Color.GetValue();
+    int r = ret.GetRed();
+    int g = ret.GetGreen();
+    int b = ret.GetBlue();
+    int res = (r + g + b) / 3;
+
+    ret = Gdiplus::Color(254, res, res, res);
+
+    return ret;
 }
 
 Gdiplus::Color HSVtoRGB(float H, float S, float V)

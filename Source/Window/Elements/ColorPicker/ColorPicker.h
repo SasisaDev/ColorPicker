@@ -15,6 +15,7 @@
 
 #define EL_PICKER L"colpik_picker"
 
+Gdiplus::Color GetInvertedBW(Gdiplus::Color Color);
 Gdiplus::Color HSVtoRGB(float H, float S, float V);
 Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* SrcBitmap2);
 std::wstring hexStr(BYTE data);
