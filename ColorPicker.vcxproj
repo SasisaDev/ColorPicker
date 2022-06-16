@@ -171,12 +171,12 @@
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\Arrow.bmp" />
-    <Image Include="..\..\..\Downloads\Body.bmp" />
-    <Image Include="..\..\..\Downloads\HueSlider.bmp" />
-    <Image Include="..\..\..\Downloads\picker.ico" />
-    <Image Include="..\..\..\Downloads\SliderHandle.bmp" />
-    <Image Include="..\..\..\Downloads\TextBox.bmp" />
+    <Image Include="Resources\Arrow.bmp" />
+    <Image Include="Resources\Body.bmp" />
+    <Image Include="Resources\HueSlider.bmp" />
+    <Image Include="Resources\picker.ico" />
+    <Image Include="Resources\SliderHandle.bmp" />
+    <Image Include="Resources\TextBox.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

@@ -81,22 +81,22 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\picker.ico">
+    <Image Include="Resources\picker.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\Downloads\Body.bmp">
+    <Image Include="Resources\Body.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\Downloads\Arrow.bmp">
+    <Image Include="Resources\Arrow.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\Downloads\TextBox.bmp">
+    <Image Include="Resources\TextBox.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\Downloads\SliderHandle.bmp">
+    <Image Include="Resources\SliderHandle.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\..\Downloads\HueSlider.bmp">
+    <Image Include="Resources\HueSlider.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
