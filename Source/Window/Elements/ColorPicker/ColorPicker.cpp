@@ -145,9 +145,9 @@ void ColColorPicker::PickColor()
     int y = Selection.y;
     ColColorPicker::Background->GetPixel(x, y, &Color);
 
-    BYTE r = Color.GetRed();
-    BYTE g = Color.GetGreen();
-    BYTE b = Color.GetBlue();
+    volatile const BYTE r = Color.GetRed();
+    volatile const BYTE g = Color.GetGreen();
+    volatile const BYTE b = Color.GetBlue();
 
     // Send to containers
     if (RGB)
@@ -314,7 +314,7 @@ Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* 
             byte* Src2Ptr = (byte*)Src2Data.Scan0 + col * Src2Data.Stride;
             byte* DestPtr = (byte*)DestData.Scan0 + col * DestData.Stride;
 
-            for (int row = 0; row < bitmap->GetWidth() - 1; row++)
+            for (int row = 0; row < bitmap->GetWidth(); row++)
             {
                 for (int byt = 0; byt < 3; byt++)
                 {
@@ -335,7 +335,7 @@ Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* 
     }
     catch (std::exception ex)
     {
-
+        printf("");
     }
 
     return bitmap;
