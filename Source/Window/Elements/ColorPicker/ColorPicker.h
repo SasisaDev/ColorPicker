@@ -23,7 +23,7 @@ std::wstring hexStr(BYTE data);
 class ColColorPicker : public ColElement {
 protected:
 	static Gdiplus::Bitmap* Background;
-	Gdiplus::Color Color;
+	std::atomic<Gdiplus::Color> Color;
 	int Hue;
 
 	POINT Selection;

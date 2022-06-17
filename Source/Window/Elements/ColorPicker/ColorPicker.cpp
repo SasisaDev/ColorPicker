@@ -1,5 +1,7 @@
 #include "ColorPicker.h"
 
+#include <atomic>
+
 bool ColColorPicker::ClassRegistered = false;
 Gdiplus::Bitmap* ColColorPicker::Background = nullptr;
 
@@ -141,13 +143,16 @@ timer:
 void ColColorPicker::PickColor()
 {
     // Pick color
-    int x = Selection.x;
+    int x = (Selection.x >= ColColorPicker::Background->GetWidth()) ? 
+        ColColorPicker::Background->GetWidth()-1 : Selection.x;
     int y = Selection.y;
-    ColColorPicker::Background->GetPixel(x, y, &Color);
+    Gdiplus::Color newClr;
+    ColColorPicker::Background->GetPixel(x, y, &newClr);
+    Color.store(newClr);
 
-    volatile const BYTE r = Color.GetRed();
-    volatile const BYTE g = Color.GetGreen();
-    volatile const BYTE b = Color.GetBlue();
+    volatile const BYTE r = Color.load().GetRed();
+    volatile const BYTE g = Color.load().GetGreen();
+    volatile const BYTE b = Color.load().GetBlue();
 
     // Send to containers
     if (RGB)
@@ -166,9 +171,9 @@ void ColColorPicker::PickColor()
     if (HEX)
     {
         std::wstringstream hex;
-        hex << L"#" << hexStr(Color.GetR());
-        hex << hexStr(Color.GetG());
-        hex << hexStr(Color.GetB());
+        hex << L"#" << hexStr(r);
+        hex << hexStr(g);
+        hex << hexStr(b);
         if (Alpha)
         {
             if (Alpha->GetValue() != 255)
@@ -308,7 +313,7 @@ Gdiplus::Bitmap* MultiplyImagePtr(Gdiplus::Bitmap* SrcBitmap1, Gdiplus::Bitmap* 
 
         int xOffset = 3;
 
-        for (int col = 0; col < bitmap->GetHeight() - 1; col++)
+        for (int col = 0; col < bitmap->GetHeight() ; col++)
         {
             byte* Src1Ptr = (byte*)Src1Data.Scan0 + col * Src1Data.Stride;
             byte* Src2Ptr = (byte*)Src2Data.Scan0 + col * Src2Data.Stride;
